@@ -53,7 +53,7 @@ const transStrings = {
 const changeLang = e => {
   let lang = e.target.dataset.uid;
   Object.keys(transStrings).forEach(fig => {
-    let strings = transStrings[fig].map(string => transInfo[lang][string]);
+    let strings = transStrings[fig].map(string => (transInfo[lang][string] || "<i>" + string + "</i>"));
     document.getElementById(fig).innerHTML = strings.join(" — ");
   });
 };
