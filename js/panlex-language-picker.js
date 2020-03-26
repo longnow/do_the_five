@@ -1,0 +1,1 @@
+../node_modules/panlex-language-picker/index.js
