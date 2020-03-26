@@ -1,0 +1,41 @@
+.picker {
+  display: flex;
+  flex-direction: row;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+figure {
+  min-inline-size: 500px;
+}
+
+svg {
+  inline-size: 100%;
+  block-size: 200px;
+  padding-block-start: 16px;
+  padding-block-end: 16px;
+  background-color: lightblue;
+
+}
+
+img {
+  inline-size: 100%;
+}
+
+figcaption {
+  text-align: center;
+}
+
+.skin {
+  fill: #a1a1a1;
+  stroke: #575757;
+}
+
+.skin-dark {
+  fill: #575757;
+  stroke: #333333;
+}

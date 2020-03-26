@@ -1,0 +1,11 @@
+.panlex-language-picker ul {
+  border: 1px black solid;
+}
+
+.panlex-language-picker li {
+  border-block-end: 1px black solid;
+}
+
+.panlex-language-picker li:hover {
+  background: lightgrey;
+}
