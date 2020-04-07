@@ -1,79 +1,92 @@
-let transInfo;
+const transNodes = document.querySelectorAll("[contenteditable='true']");
+const initialSearchParams = new URLSearchParams(location.search);
+const official = initialSearchParams.get("official");
 
-const lightenDarkenColor = (col, amt) => {
-  var usePound = false;
+let currUid = initialSearchParams.get("uid") || "eng-000";
+let browserUid = "eng-000";
+let currId = initialSearchParams.get("id") || "";
+let currDir = initialSearchParams.get("dir") || "ltr";
 
-  if (col[0] == "#") {
-    col = col.slice(1);
-    usePound = true;
+const prepTrans = (trans) =>
+  Array.isArray(trans)
+    ? trans
+        .map(([expr, i]) => `<span class="panlexese pl${i}">${expr}</span>`)
+        .join(" — ")
+    : trans;
+
+const applyTranslations = (transMap) => {
+  transNodes.forEach((node) => (node.innerHTML = prepTrans(transMap[node.id])));
+};
+
+const populateTranslations = () => {
+  let url = new URL("https://apps.panlex.org/do_the_five-server/");
+  [currUid, browserUid, "eng-000"].forEach(
+    (uid) => uid && url.searchParams.append("uid", uid)
+  );
+  currId && url.searchParams.append("id", currId);
+  return fetch(url)
+    .then((r) => r.json())
+    .then((json) => {
+      applyTranslations(json);
+      document.children[0].setAttribute("dir", currDir);
+    });
+};
+
+const changeLang = (e) => {
+  let newUrl = new URL(location);
+  newUrl.searchParams.set("uid", e.target.dataset.uid);
+  newUrl.searchParams.delete("id");
+  official && newUrl.searchParams.set("official", official);
+  newUrl.searchParams.set("dir", scriptInfo[e.target.dataset.script_expr_txt]);
+  location = newUrl;
+};
+
+const saveTranslations = () => {
+  let uid = currUid;
+  let trans = Array.from(transNodes).reduce(
+    (acc, node) => ({ ...acc, [node.id]: node.textContent }),
+    {}
+  );
+  let url = new URL("https://apps.panlex.org/do_the_five-server/add");
+  url.searchParams.append("uid", uid);
+  for (let key in trans) {
+    url.searchParams.append(key, trans[key]);
   }
-
-  var num = parseInt(col, 16);
-
-  var r = (num >> 16) + amt;
-
-  if (r > 255) r = 255;
-  else if (r < 0) r = 0;
-
-  var b = ((num >> 8) & 0x00ff) + amt;
-
-  if (b > 255) b = 255;
-  else if (b < 0) b = 0;
-
-  var g = (num & 0x0000ff) + amt;
-
-  if (g > 255) g = 255;
-  else if (g < 0) g = 0;
-
-  return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
+  official && url.searchParams.append("official", official);
+  fetch(url)
+    .then((r) => r.json())
+    .then((json) => {
+      let newId = json.map((n) => n.toString(36)).join("-");
+      let newUrl = new URL(location);
+      newUrl.searchParams.set("uid", currUid);
+      newUrl.searchParams.set("id", newId);
+      location = newUrl;
+    });
 };
 
-const changeSkin = e => {
-  let skin = e.target.value;
-  let skinDark = lightenDarkenColor(skin, -30);
-  let skinVeryDark = lightenDarkenColor(skin, -30);
-  Array.from(document.getElementsByClassName("skin")).forEach(node => {
-    node.style.fill = skin;
-    node.style.stroke = skinDark;
-  });
-  Array.from(document.getElementsByClassName("skin-dark")).forEach(node => {
-    node.style.fill = skinDark;
-    node.style.stroke = skinVeryDark;
-  });
+const buildUrl = () => {
+  let uid = document.getElementById("lang-picker").dataset.uid || browserUid;
+  let url = new URL(location);
+  url.search = "";
+  url.searchParams.append("uid", uid);
+  currId && url.searchParams.append("id", currId);
+  return url;
 };
 
-const transStrings = {
-  wash: ["wash", "hand"],
-  cough: ["cough", "elbow"],
-  face: ["no", "touch", "face"],
-  distance: ["distance"],
-  home: ["stay", "home"]
-};
+let scriptInfo;
 
-const changeLang = e => {
-  let lang = e.target.dataset.uid;
-  Object.keys(transStrings).forEach(fig => {
-    let strings = transStrings[fig].map(string => (transInfo[lang][string] || "<i>" + string + "</i>"));
-    document.getElementById(fig).innerHTML = strings.join(" — ");
-  });
-};
-
-document
-  .getElementsByName("skin")
-  .forEach(node => node.addEventListener("change", changeSkin));
-
-fetch("result.json")
-  .then(r => r.json())
-  .then(json => {
-    transInfo = json;
+fetch("script_data.json")
+  .then((r) => r.json())
+  .then((json) => {
+    scriptInfo = json;
   })
   .then(() => {
-    document.getElementsByName("lang").forEach(node => {
-      node.addEventListener("change", changeLang);
-      node.nextElementSibling.innerHTML = transInfo[node.value].autoglossonym;
-    });
-  });
-
-document
-  .getElementById("lang-picker")
-  .addEventListener("language-select", changeLang);
+    document
+      .getElementById("lang-picker")
+      .addEventListener("language-select", changeLang);
+    return populateTranslations();
+  })
+  .then(
+    () =>
+      (document.getElementById("poster-content").style.visibility = "visible")
+  );

@@ -18,7 +18,9 @@ The Javascript file defines a new customized `input` element:
 
 `type` should be set to `"text"`. `value` can be set if an initial value is needed.
 
-When a language is selected by the user, the `data-lv` attribute is set to the PanLex Language Variety ID (e.g. "187" for English), the `data-uid` attribute is set to the PanLex Language Variety UID (e.g. "eng-000" for English), and a `language-select` event is fired, which can be listened for.
+`include` is an optional attribute for fetching additional data about the language variety. Each value should be separated by a space, e.g. `include="expr_count region_expr_langvar"`. See [here](https://dev.panlex.org/api/#suggest) (under `/suggest/langvar`) for valid values (invalid values are ignored). Some useful ones are `expr_count` for the number of expressions the language variety contains, `script_expr_txt` for the language variety's ISO 15924 script code, and `region_expr_txt` for the language variety's region code (typically as either an ISO-3166-1 alpha-2 code like "DE" or "US", or a UN M49 code like "419" for Latin America).
+
+When a language is selected by the user, the `data-lv` attribute is set to the PanLex Language Variety ID (e.g. "187" for English), the `data-uid` attribute is set to the PanLex Language Variety UID (e.g. "eng-000" for English), and anything requested in `include` is set to `data-` + value (e.g. `data-expr_count`). Finally, a `language-select` event is fired, which can be listened for.
 
 ### Why is it so ugly?
 
@@ -41,6 +43,7 @@ The attributes `list-class` and `list-item-class` can also be set to specify the
 1.0.0: Initial release
 1.2.0: Added ability to set initial value
 2.0.0: Switched to custom `<input>` component instead of entirely new componenent, added event firing
+2.3.0: Added ability to `include` additional data.
 
 ## License
 
