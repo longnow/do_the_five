@@ -4,8 +4,8 @@
   <head>
     <meta charset="utf-8" />
 
-    <title>Do the 5</title>
-    <meta name="description" content="Do the 5 poster" />
+    <title>Stop Coronavirus</title>
+    <meta name="description" content="Stop Coronavirus poster" />
     <meta name="author" content="Translation Commons & PanLex" />
 
     <link rel="stylesheet" href="css/styles.css?v=1.0" />
@@ -84,7 +84,7 @@
                 contenteditable="true"
                 spellcheck="false"
               >
-                Keep safe distance
+                Keep distance
               </span>
             </div>
             <div>
@@ -99,9 +99,10 @@
               </span>
             </div>
           </div>
-          <!-- <div id="share" contenteditable="true" spellcheck="false">
-          Share with friends and family!
-        </div> -->
+          <div id="disclaimer">
+            Community-generated translations have not been verified by
+            Translation Commons or PanLex.
+          </div>
         </div>
       </div>
       <div class="logos" id="bottom-logos">
@@ -145,7 +146,8 @@
     </div>
     <div class="share-buttons">
       <a
-        class="share-button facebook"
+        class="share-button app"
+        id="facebook"
         href="https://facebook.com/sharer/sharer.php?u=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
         target="_blank"
         rel="noopener"
@@ -154,7 +156,8 @@
         <i class="fab fa-facebook"></i>
       </a>
       <a
-        class="share-button twitter"
+        class="share-button app"
+        id="twitter"
         href="https://twitter.com/intent/tweet/?text=Stop%20Coronavirus&amp;url=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
         target="_blank"
         rel="noopener"
@@ -164,7 +167,8 @@
       </a>
 
       <a
-        class="share-button whatsapp"
+        class="share-button app"
+        id="whatsapp"
         href="whatsapp://send?text=Stop%20Coronavirus%20https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
         target="_blank"
         rel="noopener"
@@ -174,7 +178,8 @@
       </a>
 
       <a
-        class="share-button vk"
+        class="share-button app"
+        id="vk"
         href="http://vk.com/share.php?title=Stop%20Coronavirus&amp;url=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
         target="_blank"
         rel="noopener"
@@ -184,7 +189,8 @@
       </a>
 
       <a
-        class="share-button telegram"
+        class="share-button app"
+        id="telegram"
         href="https://telegram.me/share/url?text=Stop%20Coronavirus&amp;url=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
         target="_blank"
         rel="noopener"
@@ -194,7 +200,8 @@
       </a>
 
       <a
-        class="share-button weibo"
+        class="share-button app"
+        id="weibo"
         href="http://service.weibo.com/share/share.php?title=Stop%20Coronavirus&amp;url=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
         target="_blank"
         rel="noopener"
@@ -204,7 +211,8 @@
       </a>
 
       <a
-        class="share-button weixin"
+        class="share-button app"
+        id="weixin"
         target="_blank"
         rel="noopener"
         aria-label=""
@@ -213,7 +221,8 @@
       </a>
 
       <a
-        class="share-button qq"
+        class="share-button app"
+        id="qq"
         href="http://connect.qq.com/widget/shareqq/index.html?title=Stop%20Coronavirus&amp;url=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
         target="_blank"
         rel="noopener"
@@ -222,7 +231,8 @@
         <i class="fab fa-qq"></i>
       </a>
       <a
-        class="share-button plain"
+        class="share-button plain app"
+        id="email"
         href="mailto:?subject=Stop%20Coronavirus&amp;body=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
         target="_self"
         rel="noopener"
@@ -239,8 +249,11 @@
         <i class="fas fa-save"></i>
       </a>
 
-      <!-- <img id="save" src="./images/save.svg" onclick="saveTranslations()" /> -->
+      <a class="share-button plain" onclick="window.print()">
+        <i class="fas fa-print"></i>
+      </a>
     </div>
+    <input type="text" id="official"/>
     <script src="js/panlex-language-picker.js"></script>
     <script src="js/scripts.js"></script>
   </body>

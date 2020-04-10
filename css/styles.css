@@ -99,6 +99,7 @@ body {
 
 #stop {
   font-size: 36pt;
+  margin-block-start: 2mm;
   margin-block-end: 6mm;
   text-transform: uppercase;
   text-align: center;
@@ -118,7 +119,7 @@ body {
   padding-inline-start: 8px;
   padding-inline-end: 8px;
   transform-origin: top;
-  animation: slide-up 0.4s ease;
+  /* animation: slide-up 0.4s ease; */
 }
 
 .panlex-language-picker li:hover {
@@ -199,11 +200,16 @@ body {
   font-style: italic;
 }
 
+#disclaimer {
+  font-weight: normal;
+  font-size: 10pt;
+}
+
 .share-buttons {
   display: flex;
   flex-direction: row;
   margin-block-start: 16px;
-  inline-size: 50%;
+  inline-size: 210mm;
   justify-content: space-between;
   flex-wrap: wrap;
 }
@@ -222,19 +228,19 @@ body {
   margin: 16px;
 }
 
-.facebook {
+#facebook {
   background-color: #3b5998;
 }
 
-.facebook:hover {
+#facebook:hover {
   background-color: #2d4373;
 }
 
-.twitter {
+#twitter {
   background-color: #55acee;
 }
 
-.twitter:hover {
+#twitter:hover {
   background-color: #2795e9;
 }
 
@@ -246,52 +252,56 @@ body {
   background-color: #5e5e5e;
 }
 
-.whatsapp {
+#whatsapp {
   background-color: #25d366;
 }
 
-.whatsapp:hover {
+#whatsapp:hover {
   background-color: #1da851;
 }
 
-.vk {
+#vk {
   background-color: #507299;
 }
 
-.telegram {
-  background-color: #54a9eb;
-}
-
-.telegram:hover {
-  background-color: #4b97d1;
-}
-
-.vk:hover {
+#vk:hover {
   background-color: #43648c;
 }
 
-.weibo {
+#telegram {
+  background-color: #54a9eb;
+}
+
+#telegram:hover {
+  background-color: #4b97d1;
+}
+
+#weibo {
   background-color: #e1162c;
 }
 
-.weibo:hover {
+#weibo:hover {
   background-color: #cf1429;
 }
 
-.weixin {
+#weixin {
   background-color: #2dc100;
 }
 
-.weixin:hover {
+#weixin:hover {
   background-color: #28ad00;
 }
 
-.qq {
+#qq {
   background-color: #161616;
 }
 
-.qq:hover {
+#qq:hover {
   background-color: #020202;
+}
+
+#official {
+  display: none;
 }
 
 
