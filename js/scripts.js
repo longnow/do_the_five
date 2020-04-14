@@ -139,22 +139,41 @@ qrcode.makeCode(location.toString());
 
 const changeShareURL = (e) => {
   let node = e.currentTarget;
-  buildUrl().then((newUrl) => {
-    newUrl.searchParams.delete("official");
-    if (node.id == "weixin") {
-      qrcode.makeCode(newUrl.toString());
-      qrcodeModal.style.display = "flex";
-    } else {
-      window.open(
-        shareURLBuilders[node.id](
-          document.getElementById("stop").textContent,
-          newUrl
-        ),
-        "_blank",
-        "noopener"
-      );
+  buildUrl().then(
+    (newUrl) => {
+      newUrl.searchParams.delete("official");
+      if (node.id == "weixin") {
+        qrcode.makeCode(newUrl.toString());
+        qrcodeModal.style.display = "flex";
+      } else {
+        window.open(
+          shareURLBuilders[node.id](
+            document.getElementById("stop").textContent,
+            newUrl
+          ),
+          "_blank",
+          "noopener"
+        );
+      }
+    },
+    () => {
+      newUrl = new URL(location);
+      newUrl.searchParams.delete("official");
+      if (node.id == "weixin") {
+        qrcode.makeCode(newUrl.toString());
+        qrcodeModal.style.display = "flex";
+      } else {
+        window.open(
+          shareURLBuilders[node.id](
+            document.getElementById("stop").textContent,
+            newUrl
+          ),
+          "_blank",
+          "noopener"
+        );
+      }
     }
-  });
+  );
   e.preventDefault();
 };
 
