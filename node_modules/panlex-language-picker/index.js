@@ -13,20 +13,20 @@ const validIncludes = new Set([
   "region_expr_txt",
   "script_expr",
   "script_expr_langvar",
-  "script_expr_txt"
+  "script_expr_txt",
 ]);
 
 function query(ep, params, get = false) {
   let url = new URL(URLBASE + ep);
   let headers = new Headers({
     "x-app-name": `panlex-language-picker/2.3.0`,
-    "content-type": "application/json"
+    "content-type": "application/json",
   });
   return fetch(url, {
     method: "POST",
     headers,
-    body: JSON.stringify(params)
-  }).then(response => response.json());
+    body: JSON.stringify(params),
+  }).then((response) => response.json());
 }
 
 class PanLexLanguagePicker extends HTMLInputElement {
@@ -58,11 +58,10 @@ class PanLexLanguagePicker extends HTMLInputElement {
     this.lngList = document.createElement("ul");
     this.lngList.className = this.getAttribute("list-class") || "";
     this.lastValue = this.value;
-    this.include =
-      this.getAttribute("include") &&
-      this.getAttribute("include")
+    if (this.getAttribute("include"))
+      this.include = this.getAttribute("include")
         .split(" ")
-        .filter(inc => validIncludes.has(inc));
+        .filter((inc) => validIncludes.has(inc));
     this.addEventListener("input", this.debouncedGetSuggestions.bind(this));
     document.addEventListener("click", () => this.closeIfOpen());
   }
@@ -76,7 +75,7 @@ class PanLexLanguagePicker extends HTMLInputElement {
   }
 
   debounce(func, delay) {
-    return args => {
+    return (args) => {
       let previousCall = this.lastCall;
       this.lastCall = Date.now();
       if (previousCall && this.lastCall - previousCall <= delay) {
@@ -90,14 +89,16 @@ class PanLexLanguagePicker extends HTMLInputElement {
     query("/suggest/langvar", {
       txt: txt,
       pref_trans_langvar: 187,
-      include: this.include
-    }).then(response => {
+      include: this.include,
+    }).then((response) => {
       if (response.suggest) {
         this.lngList.innerHTML = "";
-        response.suggest.forEach(s => {
+        response.suggest.forEach((s) => {
           let li = document.createElement("li");
           li.className = this.getAttribute("list-item-class") || "";
-          Object.keys(s).forEach(k => k !== "trans" && (li.dataset[k] = s[k]));
+          Object.keys(s).forEach(
+            (k) => k !== "trans" && (li.dataset[k] = s[k])
+          );
           li.dataset.name = s.trans[0].txt;
           li.addEventListener("click", this.clickSuggestion.bind(this));
           li.innerHTML = `
@@ -110,10 +111,12 @@ class PanLexLanguagePicker extends HTMLInputElement {
             </span>
           </div>
           <div>
-            ${s.trans
-              .slice(1)
-              .map(tran => tran.txt)
-              .join(" — ") || "&nbsp;"}
+            ${
+              s.trans
+                .slice(1)
+                .map((tran) => tran.txt)
+                .join(" — ") || "&nbsp;"
+            }
           </div>
           `;
           this.lngList.appendChild(li);
@@ -128,7 +131,7 @@ class PanLexLanguagePicker extends HTMLInputElement {
 
   clickSuggestion(e) {
     Object.keys(e.currentTarget.dataset).forEach(
-      k => (this.dataset[k] = e.currentTarget.dataset[k])
+      (k) => (this.dataset[k] = e.currentTarget.dataset[k])
     );
     this.closeWithValue(e.currentTarget.dataset.name);
     this.dispatchEvent(new Event("language-select"));
@@ -148,5 +151,5 @@ class PanLexLanguagePicker extends HTMLInputElement {
 }
 
 window.customElements.define("panlex-language-picker", PanLexLanguagePicker, {
-  extends: "input"
+  extends: "input",
 });

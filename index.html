@@ -7,7 +7,7 @@
     <title>Stop Coronavirus</title>
     <meta name="description" content="Stop Coronavirus poster" />
     <meta name="author" content="Translation Commons & PanLex" />
-
+    <link rel="icon" href="images/favicon.png" type="image/x-icon" />
     <link rel="stylesheet" href="css/styles.css?v=1.0" />
     <link href="css/fontawesome.min.css" rel="stylesheet" />
     <link href="css/brands.min.css" rel="stylesheet" />
@@ -30,16 +30,12 @@
             <div id="stop" contenteditable="true" spellcheck="false">
               Stop Coronavirus
             </div>
-            <form>
-              <label id="language" contenteditable="true" spellcheck="false"
-                >Language</label
-              >
-              <input
-                type="text"
-                is="panlex-language-picker"
-                id="lang-picker"
-                include="script_expr_txt"
-              />
+            <form class="noprint" id="lang-picker-form">
+              <label id="language" contenteditable="true" spellcheck="false">
+                Language
+              </label>
+              <input type="text" is="panlex-language-picker" id="lang-picker" />
+              <i id="search-icon" class="fas fa-search"></i>
             </form>
           </div>
           <div id="steps">
@@ -99,6 +95,17 @@
               </span>
             </div>
           </div>
+          <div class="noprint" id="frozen-uid-warning">
+            please change language
+          </div>
+          <div class="noprint" id="pw-save">
+            <input type="text" id="official" />
+            <i
+              id="save-icon"
+              class="fas fa-save"
+              onclick="saveTranslations()"
+            ></i>
+          </div>
           <div id="disclaimer">
             Community-generated translations have not been verified by
             Translation Commons or PanLex.
@@ -144,100 +151,44 @@
         src="images/bottom-right-circles.svg"
       />
     </div>
-    <div class="share-buttons">
-      <a
-        class="share-button app"
-        id="facebook"
-        href="https://facebook.com/sharer/sharer.php?u=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
-        target="_blank"
-        rel="noopener"
-        aria-label=""
+    <div class="noprint" id="email-blurb">
+      Please send suggestions or problems to
+      <a href="mailto:covid19@translationcommons.org"
+        >covid19@translationcommons.org</a
       >
+    </div>
+    <div class="share-buttons noprint">
+      <a class="share-button app" id="facebook">
         <i class="fab fa-facebook"></i>
       </a>
-      <a
-        class="share-button app"
-        id="twitter"
-        href="https://twitter.com/intent/tweet/?text=Stop%20Coronavirus&amp;url=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
-        target="_blank"
-        rel="noopener"
-        aria-label=""
-      >
+      <a class="share-button app" id="twitter">
         <i class="fab fa-twitter"></i>
       </a>
 
-      <a
-        class="share-button app"
-        id="whatsapp"
-        href="whatsapp://send?text=Stop%20Coronavirus%20https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
-        target="_blank"
-        rel="noopener"
-        aria-label=""
-      >
+      <a class="share-button app" id="whatsapp">
         <i class="fab fa-whatsapp"></i>
       </a>
 
-      <a
-        class="share-button app"
-        id="vk"
-        href="http://vk.com/share.php?title=Stop%20Coronavirus&amp;url=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
-        target="_blank"
-        rel="noopener"
-        aria-label=""
-      >
+      <a class="share-button app" id="vk">
         <i class="fab fa-vk"></i>
       </a>
 
-      <a
-        class="share-button app"
-        id="telegram"
-        href="https://telegram.me/share/url?text=Stop%20Coronavirus&amp;url=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
-        target="_blank"
-        rel="noopener"
-        aria-label=""
-      >
+      <a class="share-button app" id="telegram">
         <i class="fab fa-telegram"></i>
       </a>
 
-      <a
-        class="share-button app"
-        id="weibo"
-        href="http://service.weibo.com/share/share.php?title=Stop%20Coronavirus&amp;url=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
-        target="_blank"
-        rel="noopener"
-        aria-label=""
-      >
+      <a class="share-button app" id="weibo">
         <i class="fab fa-weibo"></i>
       </a>
 
-      <a
-        class="share-button app"
-        id="weixin"
-        target="_blank"
-        rel="noopener"
-        aria-label=""
-      >
+      <a class="share-button app" id="weixin">
         <i class="fab fa-weixin"></i>
       </a>
 
-      <a
-        class="share-button app"
-        id="qq"
-        href="http://connect.qq.com/widget/shareqq/index.html?title=Stop%20Coronavirus&amp;url=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
-        target="_blank"
-        rel="noopener"
-        aria-label=""
-      >
+      <a class="share-button app" id="qq">
         <i class="fab fa-qq"></i>
       </a>
-      <a
-        class="share-button plain app"
-        id="email"
-        href="mailto:?subject=Stop%20Coronavirus&amp;body=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five"
-        target="_self"
-        rel="noopener"
-        aria-label=""
-      >
+      <a class="share-button plain app" id="email">
         <i class="fas fa-envelope"></i>
       </a>
 
@@ -245,16 +196,16 @@
         <i class="fas fa-share-square"></i>
       </a>
 
-      <a class="share-button plain" onclick="saveTranslations()">
-        <i class="fas fa-save"></i>
-      </a>
-
       <a class="share-button plain" onclick="window.print()">
         <i class="fas fa-print"></i>
       </a>
     </div>
-    <input type="text" id="official"/>
+
+    <div id="qrcode-modal">
+      <div id="qrcode"></div>
+    </div>
     <script src="js/panlex-language-picker.js"></script>
+    <script src="js/qrcode.min.js"></script>
     <script src="js/scripts.js"></script>
   </body>
 </html>

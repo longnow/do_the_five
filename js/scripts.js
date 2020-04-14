@@ -1,11 +1,19 @@
+const frozenUids = new Set(["eng-000"]);
+
 const transNodes = [...document.querySelectorAll("[contenteditable='true']")];
 const initialSearchParams = new URLSearchParams(location.search);
-const official = typeof initialSearchParams.get("official") !== "undefined";
+const official = initialSearchParams.get("official") !== null;
+const borked = true;
+
+if (borked) {
+  if (!official) {
+    transNodes.forEach((node) => (node.contentEditable = false));
+  }
+}
 
 let currUid = initialSearchParams.get("uid") || "eng-000";
 let browserUid = "eng-000";
 let currId = initialSearchParams.get("id") || "";
-let currDir = initialSearchParams.get("dir") || "ltr";
 
 const prepTrans = (trans) =>
   Array.isArray(trans)
@@ -16,6 +24,7 @@ const prepTrans = (trans) =>
 
 const applyTranslations = (transMap) => {
   transNodes.forEach((node) => (node.innerHTML = prepTrans(transMap[node.id])));
+  document.title = document.getElementById("stop").textContent;
 };
 
 const populateTranslations = () => {
@@ -23,12 +32,11 @@ const populateTranslations = () => {
   [currUid, browserUid, "eng-000"].forEach(
     (uid) => uid && url.searchParams.append("uid", uid)
   );
-  currId && url.searchParams.append("id", currId);
+  !borked && currId && url.searchParams.append("id", currId);
   return fetch(url)
     .then((r) => r.json())
     .then((json) => {
       applyTranslations(json);
-      document.children[0].setAttribute("dir", currDir);
     });
 };
 
@@ -37,53 +45,50 @@ const changeLang = (e) => {
   newUrl.searchParams.set("uid", e.target.dataset.uid);
   newUrl.searchParams.delete("id");
   official && newUrl.searchParams.set("official", official);
-  newUrl.searchParams.set("dir", scriptInfo[e.target.dataset.script_expr_txt]);
   location = newUrl;
 };
 
 const buildUrl = () => {
   let uid = currUid;
+  if (frozenUids.has(uid)) return Promise.reject(new Error("frozen uid"));
   let trans = Array.from(transNodes).reduce(
     (acc, node) => ({ ...acc, [node.id]: node.textContent }),
     {}
   );
-  let url = new URL("https://apps.panlex.org/do_the_five-server/add");
-  url.searchParams.append("uid", uid);
+  let params = new URLSearchParams();
+  params.append("uid", uid);
   for (let key in trans) {
-    url.searchParams.append(key, trans[key]);
+    params.append(key, trans[key]);
   }
   official &&
-    url.searchParams.append(
+    params.append(
       "official",
       document.getElementById("official").value.toLowerCase()
     );
-  return fetch(url)
+  return fetch("https://apps.panlex.org/do_the_five-server/add", {
+    method: "POST",
+    body: params,
+  })
     .then((r) => r.json())
     .then((json) => {
       let newId = json.map((n) => n.toString(36)).join("-");
       let newUrl = new URL(location);
       newUrl.searchParams.set("uid", currUid);
-      newUrl.searchParams.set("id", newId);
+      !borked && newUrl.searchParams.set("id", newId);
       return newUrl;
     });
 };
 
 const saveTranslations = () => {
-  buildUrl().then((newUrl) => (location = newUrl));
+  buildUrl().then(
+    (newUrl) => (location = newUrl),
+    () => handleFrozenUid()
+  );
 };
 
-// const buildUrl = () => {
-//   let uid = document.getElementById("lang-picker").dataset.uid || browserUid;
-//   let url = new URL(location);
-//   url.search = "";
-//   url.searchParams.append("uid", uid);
-//   currId && url.searchParams.append("id", currId);
-//   return url;
-// };
-
-// const twitterShare = e => {
-//   e.href = "https://twitter.com/intent/tweet/?text=BlahBlahBlah&amp;url=https%3A%2F%2Fapps.panlex.org%2Fdo_the_five";
-// }
+const handleFrozenUid = () => {
+  document.getElementById("frozen-uid-warning").style.visibility = "unset";
+};
 
 const shareURLBuilders = {
   facebook: (title, url) =>
@@ -114,25 +119,61 @@ const shareURLBuilders = {
     `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(
       url
     )}`,
+  weixin: (title, url) => "",
 };
+
+const qrcode = new QRCode(document.getElementById("qrcode"), {
+  width: 500,
+  height: 500,
+});
+
+const qrcodeModal = document.getElementById("qrcode-modal");
+
+window.onclick = (e) => {
+  if (event.target == qrcodeModal) {
+    qrcodeModal.style.display = "none";
+  }
+};
+
+qrcode.makeCode(location.toString());
 
 const changeShareURL = (e) => {
   let node = e.currentTarget;
   buildUrl().then((newUrl) => {
-    // console.log(node);
-    // node.href = shareURLBuilders[node.id](
-    //   document.getElementById("stop").textContent,
-    //   newUrl
-    // );
-    window.open(
-      shareURLBuilders[node.id](
-        document.getElementById("stop").textContent,
-        newUrl
-      ),
-      "_blank"
-    );
+    newUrl.searchParams.delete("official");
+    if (node.id == "weixin") {
+      qrcode.makeCode(newUrl.toString());
+      qrcodeModal.style.display = "flex";
+    } else {
+      window.open(
+        shareURLBuilders[node.id](
+          document.getElementById("stop").textContent,
+          newUrl
+        ),
+        "_blank",
+        "noopener"
+      );
+    }
   });
   e.preventDefault();
+};
+
+const getLangvarData = (uid) => {
+  fetch("https://api.panlex.org/v2/langvar", {
+    method: "POST",
+    body: JSON.stringify({ uid, include: "script_expr_txt" }),
+  })
+    .then((r) => r.json())
+    .then((json) => {
+      if (json.result) {
+        let langvar = json.result[0];
+        document.children[0].setAttribute(
+          "dir",
+          scriptInfo[langvar.script_expr_txt]
+        );
+        document.getElementById("lang-picker").value = langvar.name_expr_txt;
+      }
+    });
 };
 
 let scriptInfo;
@@ -146,12 +187,26 @@ fetch("script_data.json")
     document
       .getElementById("lang-picker")
       .addEventListener("language-select", changeLang);
+    document
+      .getElementById("lang-picker-form")
+      .addEventListener("submit", (e) => {
+        e.preventDefault();
+        let firstLang = e.target.querySelector("li");
+        firstLang && firstLang.click();
+      });
+    getLangvarData(currUid);
     return populateTranslations();
   })
-  .then(() => {
+  .finally(() => {
     document.getElementById("poster-content").style.visibility = "visible";
-    if (official) document.getElementById("official").style.display = "unset";
-    [...document.getElementsByClassName("app")].forEach((node) =>
-      node.addEventListener("click", changeShareURL)
-    );
+    if (official) document.getElementById("pw-save").style.display = "flex";
+    [...document.getElementsByClassName("app")].forEach((node) => {
+      let newUrl = new URL(location);
+      newUrl.searchParams.delete("official");
+      node.href = shareURLBuilders[node.id](
+        document.getElementById("stop").textContent,
+        newUrl
+      );
+      node.addEventListener("click", changeShareURL);
+    });
   });
