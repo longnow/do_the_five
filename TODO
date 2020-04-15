@@ -1,3 +1,14 @@
+now:
+
+launch:
+add frozen uid to backend
+print text color
+fix share button
+
+future:
+change panlex langavar api call to coronavirus api call
+fix frozen uid to still pass translations along, just not make official
 add current poster language to language picker preferred translations
 add tooltip translations
 add browser language
+create interface for reviewing/editing translations

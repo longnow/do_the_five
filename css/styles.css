@@ -5,12 +5,19 @@ body {
   font-family: sans-serif;
 }
 
+.background-padding {
+  padding: 0.5mm;
+  border-radius: 2mm;
+  background-color: white;
+  z-index: 10;
+}
+
 #poster {
   inline-size: 209mm;
   block-size: 296mm;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   border: 1px black solid;
   position: relative;
@@ -50,8 +57,8 @@ body {
 }
 
 #top-logos {
-  margin-block-start: 16mm;
-  margin-block-end: 8mm;
+  margin-block-start: 8mm;
+  margin-block-end: 4mm;
 }
 
 .logo {
@@ -65,27 +72,31 @@ body {
 }
 
 #poster-background {
-  block-size: 100%;
-  inline-size: 90%;
+  margin-inline-start: 12mm;
+  margin-inline-end: 12mm;
   background-color: #39a5e6;
   color: white;
   font-weight: bold;
+  flex-grow: 1;
+  display: flex;
 }
 
 #poster-content {
-  inline-size: 100%;
-  block-size: 100%;
+  /* inline-size: 100%; */
+  /* block-size: 100%; */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
   visibility: hidden;
+  flex-grow: 1;
 }
 
 #top-stuff {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-block-start: 2mm;
 }
 
 [contenteditable="true"] {
@@ -100,8 +111,7 @@ body {
 
 #stop {
   font-size: 36pt;
-  margin-block-start: 2mm;
-  margin-block-end: 6mm;
+  margin-block-end: 4mm;
   text-transform: uppercase;
   text-align: center;
 }
@@ -153,23 +163,22 @@ body {
   flex-direction: column;
   align-items: flex-start;
   font-size: 18pt;
-  inline-size: 100%;
-  margin-inline-start: 48mm;
-  block-size: 100%;
+  margin-inline-start: 24mm;
   justify-content: space-between;
-  margin-block-start: 16mm;
-  margin-block-end: 16mm;
+  margin-block-start: 12mm;
+  margin-block-end: 12mm;
+  align-self: flex-start;
+  flex-grow: 1;
 }
 
 #steps > div {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-block-end: 1mm;
+  /* margin-block-end: 1mm; */
 }
 
 .caption {
-  inline-size: 100%;
   margin-inline-end: 24mm;
 }
 
@@ -178,13 +187,27 @@ body {
   font-weight: normal;
   font-style: italic;
   color: red;
+  align-self: center;
+  position: absolute;
+  z-index: 1;
+}
 
+#bottom-stuff {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#email-form {
+  font-weight: normal;
+  margin-block-end: 2mm;
 }
 
 #pw-save {
-  display: none;
+  display: flex;
   flex-direction: row;
-  margin-block-end: 2mm;
+  justify-content: center;
+  margin-block-end: 1mm;
 }
 
 #save-icon {
@@ -203,23 +226,22 @@ body {
 }
 
 #bottom-logos {
-  margin-block-start: 2mm;
-  margin-block-end: 8mm;
-  padding-inline-start: 12mm;
-  padding-inline-end: 12mm;
-  box-sizing: border-box;
+  margin-block-start: 4mm;
+  margin-block-end: 4mm;
+  display: flex;
+  justify-content: center;
 }
 
 #partnership {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  margin-inline-end: 8mm;
 }
 
 #partner-text {
-  margin-inline-start: 4mm;
-  margin-inline-end: 4mm;
+  margin-inline-start: 2mm;
+  margin-inline-end: 2mm;
 }
 
 #pllogo {
@@ -232,11 +254,15 @@ body {
 
 #disclaimer {
   font-weight: normal;
-  font-size: 10pt;
+  font-size: 8pt;
+  inline-size: 60%;
+  text-align: center;
 }
 
 #email-blurb {
   font-size: 10pt;
+  align-self: center;
+  background-color: white;
 }
 
 .share-buttons {
@@ -345,7 +371,7 @@ body {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 #qrcode {
@@ -354,8 +380,23 @@ body {
 }
 
 @media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
   body {
     margin: 0px;
+  }
+
+  #poster {
+    margin: 10mm;
+    inline-size: 189mm;
+    block-size: 276mm;
+  }
+
+  #poster-background {
+    color: black;
   }
 
   .noprint {
@@ -364,5 +405,5 @@ body {
 
   [contenteditable="true"] {
     text-decoration: none;
-  }  
+  }
 }

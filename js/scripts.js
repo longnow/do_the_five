@@ -1,19 +1,25 @@
+const borked = true;
+
 const frozenUids = new Set(["eng-000"]);
 
 const transNodes = [...document.querySelectorAll("[contenteditable='true']")];
 const initialSearchParams = new URLSearchParams(location.search);
 const official = initialSearchParams.get("official") !== null;
-const borked = true;
 
 if (borked) {
   if (!official) {
     transNodes.forEach((node) => (node.contentEditable = false));
+    document.getElementById("email-form").style.display = "none";
   }
 }
 
 let currUid = initialSearchParams.get("uid") || "eng-000";
 let browserUid = "eng-000";
 let currId = initialSearchParams.get("id") || "";
+
+const uniqify = (ary) => {
+  return ary.filter((x,i) => ary.indexOf(x) === i);
+}
 
 const prepTrans = (trans) =>
   Array.isArray(trans)
@@ -29,7 +35,7 @@ const applyTranslations = (transMap) => {
 
 const populateTranslations = () => {
   let url = new URL("https://apps.panlex.org/do_the_five-server/");
-  [currUid, browserUid, "eng-000"].forEach(
+  uniqify([currUid, browserUid, "eng-000"]).forEach(
     (uid) => uid && url.searchParams.append("uid", uid)
   );
   !borked && currId && url.searchParams.append("id", currId);
@@ -48,9 +54,11 @@ const changeLang = (e) => {
   location = newUrl;
 };
 
+const frozenUidError = new Error("frozenUid");
+
 const buildUrl = () => {
   let uid = currUid;
-  if (frozenUids.has(uid)) return Promise.reject(new Error("frozen uid"));
+  if (frozenUids.has(uid)) return Promise.reject(frozenUidError);
   let trans = Array.from(transNodes).reduce(
     (acc, node) => ({ ...acc, [node.id]: node.textContent }),
     {}
@@ -60,10 +68,12 @@ const buildUrl = () => {
   for (let key in trans) {
     params.append(key, trans[key]);
   }
+  if (!borked || (borked && official))
+    params.append("email", document.getElementById("email").value);
   official &&
     params.append(
       "official",
-      document.getElementById("official").value.toLowerCase()
+      document.getElementById("official-pw").value.toLowerCase()
     );
   return fetch("https://apps.panlex.org/do_the_five-server/add", {
     method: "POST",
@@ -82,7 +92,13 @@ const buildUrl = () => {
 const saveTranslations = () => {
   buildUrl().then(
     (newUrl) => (location = newUrl),
-    () => handleFrozenUid()
+    (reason) => {
+      if (reason === frozenUidError) {
+        handleFrozenUid();
+      } else {
+        console.log(reason);
+      }
+    }
   );
 };
 
@@ -218,7 +234,11 @@ fetch("script_data.json")
   })
   .finally(() => {
     document.getElementById("poster-content").style.visibility = "visible";
-    if (official) document.getElementById("pw-save").style.display = "flex";
+    if (!official) {
+      [...document.getElementsByClassName("official-only")].forEach(
+        (node) => (node.style.display = "none")
+      );
+    }
     [...document.getElementsByClassName("app")].forEach((node) => {
       let newUrl = new URL(location);
       newUrl.searchParams.delete("official");

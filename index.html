@@ -17,10 +17,20 @@
   <body>
     <div id="poster">
       <div class="logos" id="top-logos">
-        <a href="https://translationcommons.org" target="_blank" rel="noopener">
+        <a
+          href="https://translationcommons.org"
+          target="_blank"
+          rel="noopener"
+          class="background-padding"
+        >
           <img class="logo" src="images/tc.png" />
         </a>
-        <a href="https://iyil2019.org" target="_blank" rel="noopener">
+        <a
+          href="https://iyil2019.org"
+          target="_blank"
+          rel="noopener"
+          class="background-padding"
+        >
           <img class="iyil logo" src="images/iyil.png" />
         </a>
       </div>
@@ -95,20 +105,27 @@
               </span>
             </div>
           </div>
-          <div class="noprint" id="frozen-uid-warning">
-            please change language
-          </div>
-          <div class="noprint" id="pw-save">
-            <input type="text" id="official" />
-            <i
-              id="save-icon"
-              class="fas fa-save"
-              onclick="saveTranslations()"
-            ></i>
-          </div>
-          <div id="disclaimer">
-            Community-generated translations have not been verified by
-            Translation Commons or PanLex.
+          <div id="bottom-stuff">
+            <form id="email-form" class="noprint">
+              <label>Email (optional):</label>
+              <input type="text" id="email" />
+            </form>
+
+            <div class="noprint official-only" id="pw-save">
+              <div class="noprint official-only" id="frozen-uid-warning">
+                please change language
+              </div>
+              <input type="text" id="official-pw" />
+              <i
+                id="save-icon"
+                class="fas fa-save"
+                onclick="saveTranslations()"
+              ></i>
+            </div>
+            <div id="disclaimer">
+              Translation Commons and PanLex thank all contributors helping us
+              reach indigenous communities around the world with this vital information.
+            </div>
           </div>
         </div>
       </div>
@@ -118,15 +135,25 @@
             href="https://translationcommons.org"
             target="_blank"
             rel="noopener"
+            class="background-padding"
           >
             <img class="logo" src="images/tc.png" />
           </a>
           <div id="partner-text">In partnership with</div>
-          <a href="https://panlex.org" target="_blank" rel="noopener">
+          <a
+            href="https://panlex.org"
+            target="_blank"
+            rel="noopener"
+            class="background-padding"
+          >
             <img id="pllogo" src="images/pllogo.png" />
           </a>
         </div>
-        <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+        <a
+          rel="license"
+          href="http://creativecommons.org/licenses/by-sa/4.0/"
+          class="background-padding"
+        >
           <img
             alt="Creative Commons License"
             style="border-width: 0;"
@@ -134,11 +161,11 @@
           />
         </a>
       </div>
-      <div id="email-blurb">
+      <div id="email-blurb" class="background-padding">
         Please send suggestions or problems to
-        <a href="mailto:covid19@translationcommons.org"
-          >covid19@translationcommons.org</a
-        >
+        <a href="mailto:covid19@translationcommons.org">
+          covid19@translationcommons.org
+        </a>
       </div>
       <img class="decoration" id="top-left" src="images/top-left-circles.svg" />
       <img
@@ -193,7 +220,10 @@
         <i class="fas fa-envelope"></i>
       </a>
 
-      <a class="share-button plain" onclick="Navigater.share();">
+      <a
+        class="share-button plain"
+        onclick="navigator.share({ url: location.href });"
+      >
         <i class="fas fa-share-square"></i>
       </a>
 
@@ -207,6 +237,6 @@
     </div>
     <script src="js/panlex-language-picker.js"></script>
     <script src="js/qrcode.min.js"></script>
-    <script src="js/scripts.js"></script>
+    <script src="js/scripts.js?v=1.0"></script>
   </body>
 </html>
