@@ -17,7 +17,7 @@
   <body>
     <div id="poster">
       <div class="logos" id="top-logos">
-        <a
+        <!-- <a
           href="https://translationcommons.org"
           target="_blank"
           rel="noopener"
@@ -32,7 +32,8 @@
           class="background-padding"
         >
           <img class="iyil logo" src="images/iyil.png" />
-        </a>
+        </a> -->
+        <img id="covid-logo" src="images/covid-logo.png" />
       </div>
       <div id="poster-background">
         <div id="poster-content">
@@ -124,7 +125,8 @@
             </div>
             <div id="disclaimer">
               Translation Commons and PanLex thank all contributors helping us
-              reach indigenous communities around the world with this vital information.
+              reach indigenous communities around the world with this vital
+              information.
             </div>
           </div>
         </div>
@@ -139,7 +141,7 @@
           >
             <img class="logo" src="images/tc.png" />
           </a>
-          <div id="partner-text">In partnership with</div>
+          <div id="partner-text">and</div>
           <a
             href="https://panlex.org"
             target="_blank"
@@ -149,18 +151,31 @@
             <img id="pllogo" src="images/pllogo.png" />
           </a>
         </div>
-        <a
-          rel="license"
-          href="http://creativecommons.org/licenses/by-sa/4.0/"
-          class="background-padding"
-        >
-          <img
-            alt="Creative Commons License"
-            style="border-width: 0;"
-            src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"
-          />
-        </a>
       </div>
+      <a
+        id="cc-license"
+        rel="license"
+        href="http://creativecommons.org/licenses/by-sa/4.0/"
+      >
+        <img
+          alt="Creative Commons License"
+          style="border-width: 0;"
+          src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png"
+        />
+      </a>
+      <!-- <a
+        id="cc-license"
+        rel="license"
+        href="http://creativecommons.org/licenses/by-sa/4.0/"
+        class="background-padding"
+      >
+        <img
+          alt="Creative Commons License"
+          style="border-width: 0;"
+          src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"
+        />
+      </a> -->
+
       <div id="email-blurb" class="background-padding">
         Please send suggestions or problems to
         <a href="mailto:covid19@translationcommons.org">
@@ -185,56 +200,86 @@
       />
     </div>
 
-    <div class="share-buttons noprint">
-      <a class="share-button app" id="facebook">
-        <i class="fab fa-facebook"></i>
-      </a>
-      <a class="share-button app" id="twitter">
-        <i class="fab fa-twitter"></i>
-      </a>
+    <div id="bottom-buttons" class="noprint">
+      <div>
+        <a
+          id="share-button"
+          class="share-button plain"
+          onclick="toTarget('share-popup')"
+        >
+          <i class="fas fa-share-square"></i>
+        </a>
 
-      <a class="share-button app" id="whatsapp">
-        <i class="fab fa-whatsapp"></i>
-      </a>
-
-      <a class="share-button app" id="vk">
-        <i class="fab fa-vk"></i>
-      </a>
-
-      <a class="share-button app" id="telegram">
-        <i class="fab fa-telegram"></i>
-      </a>
-
-      <a class="share-button app" id="weibo">
-        <i class="fab fa-weibo"></i>
-      </a>
-
-      <a class="share-button app" id="weixin">
-        <i class="fab fa-weixin"></i>
-      </a>
-
-      <a class="share-button app" id="qq">
-        <i class="fab fa-qq"></i>
-      </a>
-      <a class="share-button plain app" id="email">
-        <i class="fas fa-envelope"></i>
-      </a>
-
-      <a
-        class="share-button plain"
-        onclick="navigator.share({ url: location.href });"
-      >
-        <i class="fas fa-share-square"></i>
-      </a>
-
-      <a class="share-button plain" onclick="window.print()">
-        <i class="fas fa-print"></i>
-      </a>
+        <a class="share-button plain" onclick="window.print()">
+          <i class="fas fa-print"></i>
+        </a>
+      </div>
+      <div>
+        <a
+          class="share-button facebook"
+          href="https://www.facebook.com/COVID19Multilingual/"
+          target="_blank"
+          rel="noopener"
+        >
+          <i class="fab fa-facebook"></i>
+        </a>
+        <a
+          class="share-button twitter"
+          href="https://twitter.com/COVID19Multling"
+          target="_blank"
+          rel="noopener"
+        >
+          <i class="fab fa-twitter"></i>
+        </a>
+      </div>
     </div>
 
-    <div id="qrcode-modal">
-      <div id="qrcode"></div>
+    <div id="share-popup" class="overlay light">
+      <a class="cancel" onclick="toTarget('share-button')"></a>
+      <div class="popup">
+        <div class="share-buttons noprint">
+          <a class="share-button app facebook" id="facebook">
+            <i class="fab fa-facebook"></i>
+          </a>
+          <a class="share-button app twitter" id="twitter">
+            <i class="fab fa-twitter"></i>
+          </a>
+
+          <a class="share-button app" id="whatsapp">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+
+          <a class="share-button app" id="vk">
+            <i class="fab fa-vk"></i>
+          </a>
+
+          <a class="share-button app" id="telegram">
+            <i class="fab fa-telegram"></i>
+          </a>
+
+          <a class="share-button app" id="weibo">
+            <i class="fab fa-weibo"></i>
+          </a>
+
+          <a class="share-button app" id="weixin">
+            <i class="fab fa-weixin"></i>
+          </a>
+
+          <a class="share-button app" id="qq">
+            <i class="fab fa-qq"></i>
+          </a>
+          <a class="share-button plain app" id="email">
+            <i class="fas fa-envelope"></i>
+          </a>
+        </div>
+      </div>
     </div>
+
+    <div id="qrcode-popup" class="overlay">
+      <a class="cancel" onclick="toTarget('weixin')"></a>
+      <div id="qrcode" class="popup"></div>
+    </div>
+
     <script src="js/panlex-language-picker.js"></script>
     <script src="js/qrcode.min.js"></script>
     <script src="js/scripts.js?v=1.0"></script>

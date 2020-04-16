@@ -18,8 +18,16 @@ let browserUid = "eng-000";
 let currId = initialSearchParams.get("id") || "";
 
 const uniqify = (ary) => {
-  return ary.filter((x,i) => ary.indexOf(x) === i);
-}
+  return ary.filter((x, i) => ary.indexOf(x) === i);
+};
+
+const toTarget = (target) => {
+  let url = new URL(location);
+  url.hash = target;
+  location.replace(url);
+  url.hash = "";
+  window.history.replaceState(null, "", url);
+};
 
 const prepTrans = (trans) =>
   Array.isArray(trans)
@@ -143,14 +151,6 @@ const qrcode = new QRCode(document.getElementById("qrcode"), {
   height: 500,
 });
 
-const qrcodeModal = document.getElementById("qrcode-modal");
-
-window.onclick = (e) => {
-  if (event.target == qrcodeModal) {
-    qrcodeModal.style.display = "none";
-  }
-};
-
 qrcode.makeCode(location.toString());
 
 const changeShareURL = (e) => {
@@ -160,7 +160,8 @@ const changeShareURL = (e) => {
       newUrl.searchParams.delete("official");
       if (node.id == "weixin") {
         qrcode.makeCode(newUrl.toString());
-        qrcodeModal.style.display = "flex";
+        toTarget("qrcode-popup");
+        // qrcodeModal.style.display = "flex";
       } else {
         window.open(
           shareURLBuilders[node.id](
@@ -177,7 +178,7 @@ const changeShareURL = (e) => {
       newUrl.searchParams.delete("official");
       if (node.id == "weixin") {
         qrcode.makeCode(newUrl.toString());
-        qrcodeModal.style.display = "flex";
+        toTarget("qrcode-popup");
       } else {
         window.open(
           shareURLBuilders[node.id](
@@ -210,6 +211,15 @@ const getLangvarData = (uid) => {
       }
     });
 };
+
+const mobile = navigator.userAgent.match(/iPhone|iPod|iPad/) || navigator.userAgent.match(/Android/);
+
+if (mobile && navigator.share) {
+  let shareButton = document.getElementById("share-button");
+  shareButton.removeAttribute("onclick");
+  shareButton.addEventListener("click", () => navigator.share({ url: location.href }));
+
+}
 
 let scriptInfo;
 

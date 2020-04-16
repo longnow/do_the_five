@@ -1,9 +1,8 @@
 now:
 
 launch:
+fix top logo
 add frozen uid to backend
-print text color
-fix share button
 
 future:
 change panlex langavar api call to coronavirus api call

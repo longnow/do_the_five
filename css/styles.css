@@ -57,12 +57,16 @@ body {
 }
 
 #top-logos {
-  margin-block-start: 8mm;
+  margin-block-start: 4mm;
   margin-block-end: 4mm;
 }
 
+#covid-logo {
+  block-size: 35mm;
+}
+
 .logo {
-  block-size: 12mm;
+  block-size: 10.5mm;
   padding: 2mm;
 }
 
@@ -82,8 +86,6 @@ body {
 }
 
 #poster-content {
-  /* inline-size: 100%; */
-  /* block-size: 100%; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -96,7 +98,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-block-start: 2mm;
+  margin-block-start: 4mm;
 }
 
 [contenteditable="true"] {
@@ -107,6 +109,10 @@ body {
 
 [contenteditable="true"] br:last-child {
   display: none;
+}
+
+.pl2 {
+  font-style: italic;
 }
 
 #stop {
@@ -196,6 +202,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-block-end: 2mm;
 }
 
 #email-form {
@@ -229,14 +236,14 @@ body {
   margin-block-start: 4mm;
   margin-block-end: 4mm;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
 }
 
 #partnership {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-inline-end: 8mm;
+  /* margin-inline-end: 8mm; */
 }
 
 #partner-text {
@@ -245,11 +252,14 @@ body {
 }
 
 #pllogo {
-  block-size: 24mm;
+  block-size: 23.5mm;
 }
 
-.pl2 {
-  font-style: italic;
+#cc-license {
+  position: absolute;
+  right: 5mm;
+  bottom: 0;
+  z-index: 10;
 }
 
 #disclaimer {
@@ -265,13 +275,24 @@ body {
   background-color: white;
 }
 
-.share-buttons {
+#bottom-buttons {
   display: flex;
-  flex-direction: row;
-  margin-block-start: 4px;
-  inline-size: 210mm;
   justify-content: space-between;
-  flex-wrap: wrap;
+  inline-size: 209mm;
+}
+
+#bottom-buttons > div {
+  display: flex;
+}
+
+.share-buttons {
+  display: grid;
+  /* flex-direction: row; */
+  /* margin-block-start: 4px; */
+  /* inline-size: 209mm; */
+  /* justify-content: space-between; */
+  /* flex-wrap: wrap; */
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .share-button {
@@ -286,21 +307,22 @@ body {
   font-size: 24pt;
   text-decoration: none;
   margin: 16px;
+  cursor: pointer;
 }
 
-#facebook {
+.facebook {
   background-color: #3b5998;
 }
 
-#facebook:hover {
+.facebook:hover {
   background-color: #2d4373;
 }
 
-#twitter {
+.twitter {
   background-color: #55acee;
 }
 
-#twitter:hover {
+.twitter:hover {
   background-color: #2795e9;
 }
 
@@ -357,26 +379,44 @@ body {
 }
 
 #qq:hover {
-  background-color: #020202;
-}
-
-#qrcode-modal {
-  display: none;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: #000000;
 }
 
 #qrcode {
-  background-color: white;
   padding: 24px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.5);
+  /* transition: opacity 200ms; */
+  visibility: hidden;
+  opacity: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.overlay .cancel {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: default;
+}
+.overlay:target {
+  visibility: visible;
+  opacity: 1;
+}
+
+.popup {
+  background: white;
+  border: 1px solid #aaa;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  position: relative;
 }
 
 @media print {
