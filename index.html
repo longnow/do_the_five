@@ -280,6 +280,11 @@
       <div id="qrcode" class="popup"></div>
     </div>
 
+    <script>
+      if(this.customElements)
+        try{customElements.define('built-in',document.createElement('p').constructor,{'extends':'p'})}
+        catch(s){document.write('<script src="js/webcomponents-polyfill.js"><\x2fscript>')}
+    </script>
     <script src="js/panlex-language-picker.js"></script>
     <script src="js/qrcode.min.js"></script>
     <script src="js/scripts.js?v=1.0"></script>

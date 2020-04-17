@@ -29,9 +29,10 @@ function query(ep, params, get = false) {
   }).then((response) => response.json());
 }
 
+const initialized = new WeakSet;
 class PanLexLanguagePicker extends HTMLInputElement {
-  constructor() {
-    super();
+  setup() {
+    initialized.add(this);
     this.container = document.createElement("div");
     this.container.className = "panlex-language-picker";
     this.container.innerHTML = `
@@ -67,6 +68,10 @@ class PanLexLanguagePicker extends HTMLInputElement {
   }
 
   connectedCallback() {
+    if (!initialized.has(this)) {
+      this.setup();
+    }
+
     if (this.parentElement !== this.container) {
       this.parentElement.insertBefore(this.container, this);
       this.container.appendChild(this);
