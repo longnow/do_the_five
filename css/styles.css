@@ -186,7 +186,7 @@ body {
   margin-inline-end: 24mm;
 }
 
-.warning {
+.error {
   visibility: hidden;
   position: absolute;
   z-index: 1;

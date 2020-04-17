@@ -5,7 +5,6 @@ look into alt. social media
 
 future:
 flag if translation = panlexese
-change panlex langavar api call to coronavirus api call
 fix frozen uid to still pass translations along, just not make official
 add current poster language to language picker preferred translations
 add tooltip translations

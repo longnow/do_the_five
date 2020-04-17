@@ -122,9 +122,9 @@ const saveTranslations = () => {
     (newUrl) => (location = newUrl),
     (reason) => {
       if (reason === frozenUidError) {
-        showError("frozen-uid-warning");
+        showError("frozen-uid-error");
       } else if (reason === pwEmptyError) {
-        showError("pw-empty-warning");
+        showError("pw-empty-error");
       } else {
         console.log(reason);
       }
@@ -133,7 +133,7 @@ const saveTranslations = () => {
 };
 
 const showError = (err) => {
-  document.querySelectorAll(".warning").forEach((elt) => {
+  document.querySelectorAll(".error").forEach((elt) => {
     elt.style.visibility = elt.id === err ? "visible" : "hidden";
   });
 };
