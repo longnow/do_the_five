@@ -230,6 +230,7 @@ body {
 #save-icon {
   margin-inline-start: 2mm;
   font-size: 32px;
+  cursor: pointer;
 }
 
 #share {
