@@ -1,6 +1,6 @@
+const backend = "https://apps.panlex.org/do_the_five-server";
 const borked = true;
-
-const frozenUids = new Set(["eng-000"]);
+let frozen = false;
 
 const transNodes = [...document.querySelectorAll("[contenteditable='true']")];
 const initialSearchParams = new URLSearchParams(location.search);
@@ -13,37 +13,39 @@ if (borked) {
   }
 }
 
-let currUid = initialSearchParams.get("uid") || "eng-000";
-let browserUid = "eng-000";
-let currId = initialSearchParams.get("id") || "";
+const defaultUid = "eng-000";
+const fallbackUid = "eng-000";
+const currUid = initialSearchParams.get("uid") || defaultUid;
+const browserUid = defaultUid;
+const currId = initialSearchParams.get("id") || "";
 
 const uniqify = (ary) => {
   return ary.filter((x, i) => ary.indexOf(x) === i);
 };
 
 const toTarget = (target) => {
-  let url = new URL(location);
+  const url = new URL(location);
   url.hash = target;
   location.replace(url);
   url.hash = "";
   window.history.replaceState(null, "", url);
 };
 
-const prepTrans = (trans) =>
+const prepTrans = (trans, plToUpper) =>
   Array.isArray(trans)
     ? trans
-        .map(([expr, i]) => `<span class="panlexese pl${i}">${expr}</span>`)
+        .map(([expr, i]) => `<span class="panlexese pl${i}">${plToUpper ? expr.toUpperCase() : expr}</span>`)
         .join(" — ")
     : trans;
 
 const applyTranslations = (transMap) => {
-  transNodes.forEach((node) => (node.innerHTML = prepTrans(transMap[node.id])));
+  transNodes.forEach((node) => (node.innerHTML = prepTrans(transMap[node.id], node.id === "stop")));
   document.title = document.getElementById("stop").textContent;
 };
 
 const populateTranslations = () => {
-  let url = new URL("https://apps.panlex.org/do_the_five-server/");
-  uniqify([currUid, browserUid, "eng-000"]).forEach(
+  const url = new URL(`${backend}/`);
+  uniqify([currUid, browserUid, fallbackUid]).forEach(
     (uid) => uid && url.searchParams.append("uid", uid)
   );
   !borked && currId && url.searchParams.append("id", currId);
@@ -55,46 +57,53 @@ const populateTranslations = () => {
 };
 
 const changeLang = (e) => {
-  let newUrl = new URL(location);
+  const newUrl = new URL(location);
   newUrl.searchParams.set("uid", e.target.dataset.uid);
   newUrl.searchParams.delete("id");
-  official && newUrl.searchParams.set("official", official);
+  official && newUrl.searchParams.set("official", "");
   location = newUrl;
 };
 
 const frozenUidError = new Error("frozenUid");
+const pwEmptyError = new Error("pwEmpty");
 
 const buildUrl = () => {
-  let uid = currUid;
-  if (frozenUids.has(uid)) return Promise.reject(frozenUidError);
-  let trans = Array.from(transNodes).reduce(
+  if (frozen) return Promise.reject(frozenUidError);
+  const trans = Array.from(transNodes).reduce(
     (acc, node) => ({ ...acc, [node.id]: node.textContent }),
     {}
   );
-  let params = new URLSearchParams();
-  params.append("uid", uid);
-  for (let key in trans) {
+  const params = new URLSearchParams();
+  params.append("uid", currUid);
+  for (const key in trans) {
     params.append(key, trans[key]);
   }
-  if (!borked || (borked && official))
-    params.append("email", document.getElementById("email").value);
-  official &&
-    params.append(
-      "official",
-      document.getElementById("official-pw").value.toLowerCase()
-    );
-  return fetch("https://apps.panlex.org/do_the_five-server/add", {
-    method: "POST",
-    body: params,
-  })
-    .then((r) => r.json())
-    .then((json) => {
-      let newId = json.map((n) => n.toString(36)).join("-");
-      let newUrl = new URL(location);
-      newUrl.searchParams.set("uid", currUid);
-      !borked && newUrl.searchParams.set("id", newId);
-      return newUrl;
-    });
+  params.append("email", document.getElementById("email").value.trim());
+  let pwEmpty = false;
+  if (official) {
+    const pw = document.getElementById("official-pw").value.trim().toLowerCase();
+    if (pw.length === 0) {
+      pwEmpty = true;
+    } else {
+      params.append("official", pw);
+    }
+  }
+
+  const add = fetch(`${backend}/add`, { method: "POST", body: params });
+  if (pwEmpty) {
+    add.then();
+    return Promise.reject(pwEmptyError);
+  } else {
+    return add
+      .then((r) => r.json())
+      .then((json) => {
+        const newId = json.map((n) => n.toString(36)).join("-");
+        const newUrl = new URL(location);
+        newUrl.searchParams.set("uid", currUid);
+        !borked && newUrl.searchParams.set("id", newId);
+        return newUrl;
+      });
+  }
 };
 
 const saveTranslations = () => {
@@ -102,7 +111,9 @@ const saveTranslations = () => {
     (newUrl) => (location = newUrl),
     (reason) => {
       if (reason === frozenUidError) {
-        handleFrozenUid();
+        showError("frozen-uid-warning");
+      } else if (reason === pwEmptyError) {
+        showError("pw-empty-warning");
       } else {
         console.log(reason);
       }
@@ -110,8 +121,10 @@ const saveTranslations = () => {
   );
 };
 
-const handleFrozenUid = () => {
-  document.getElementById("frozen-uid-warning").style.visibility = "unset";
+const showError = (err) => {
+  document.querySelectorAll(".warning").forEach((elt) => {
+    elt.style.visibility = elt.id === err ? "visible" : "hidden";
+  });
 };
 
 const shareURLBuilders = {
@@ -154,14 +167,13 @@ const qrcode = new QRCode(document.getElementById("qrcode"), {
 qrcode.makeCode(location.toString());
 
 const changeShareURL = (e) => {
-  let node = e.currentTarget;
+  const node = e.currentTarget;
   buildUrl().then(
     (newUrl) => {
       newUrl.searchParams.delete("official");
       if (node.id == "weixin") {
         qrcode.makeCode(newUrl.toString());
         toTarget("qrcode-popup");
-        // qrcodeModal.style.display = "flex";
       } else {
         window.open(
           shareURLBuilders[node.id](
@@ -194,41 +206,23 @@ const changeShareURL = (e) => {
   e.preventDefault();
 };
 
-const getLangvarData = (uid) => {
-  fetch("https://api.panlex.org/v2/langvar", {
-    method: "POST",
-    body: JSON.stringify({ uid, include: "script_expr_txt" }),
-  })
-    .then((r) => r.json())
-    .then((json) => {
-      if (json.result) {
-        let langvar = json.result[0];
-        document.children[0].setAttribute(
-          "dir",
-          scriptInfo[langvar.script_expr_txt]
-        );
-        document.getElementById("lang-picker").value = langvar.name_expr_txt;
-      }
-    });
-};
-
 const mobile = navigator.userAgent.match(/iPhone|iPod|iPad/) || navigator.userAgent.match(/Android/);
 
 if (mobile && navigator.share) {
-  let shareButton = document.getElementById("share-button");
+  const shareButton = document.getElementById("share-button");
   shareButton.removeAttribute("onclick");
   shareButton.addEventListener("click", () => navigator.share({ url: location.href }));
-
 }
 
-let scriptInfo;
-
-fetch("script_data.json")
+fetch(`${backend}/langvar/${currUid}`)
   .then((r) => r.json())
-  .then((json) => {
-    scriptInfo = json;
-  })
-  .then(() => {
+  .then((langvar) => {
+    frozen = langvar.official_frozen;
+    document.children[0].setAttribute(
+      "dir",
+      langvar.dir
+    );
+    document.getElementById("lang-picker").value = langvar.name_expr_txt;
     document
       .getElementById("lang-picker")
       .addEventListener("language-select", changeLang);
@@ -236,10 +230,9 @@ fetch("script_data.json")
       .getElementById("lang-picker-form")
       .addEventListener("submit", (e) => {
         e.preventDefault();
-        let firstLang = e.target.querySelector("li");
+        const firstLang = e.target.querySelector("li");
         firstLang && firstLang.click();
       });
-    getLangvarData(currUid);
     return populateTranslations();
   })
   .finally(() => {
@@ -250,7 +243,7 @@ fetch("script_data.json")
       );
     }
     [...document.getElementsByClassName("app")].forEach((node) => {
-      let newUrl = new URL(location);
+      const newUrl = new URL(location);
       newUrl.searchParams.delete("official");
       node.href = shareURLBuilders[node.id](
         document.getElementById("stop").textContent,

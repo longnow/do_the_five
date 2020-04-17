@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
 
-    <title>Stop Coronavirus</title>
+    <title>STOP CORONAVIRUS</title>
     <meta name="description" content="Stop Coronavirus poster" />
     <meta name="author" content="Translation Commons & PanLex" />
     <link rel="icon" href="images/favicon.png" type="image/x-icon" />
@@ -33,13 +33,13 @@
         >
           <img class="iyil logo" src="images/iyil.png" />
         </a> -->
-        <img id="covid-logo" src="images/covid-logo.png" />
+        <img id="covid-logo" src="images/covid-logo.svg" />
       </div>
       <div id="poster-background">
         <div id="poster-content">
           <div id="top-stuff">
             <div id="stop" contenteditable="true" spellcheck="false">
-              Stop Coronavirus
+              STOP CORONAVIRUS
             </div>
             <form class="noprint" id="lang-picker-form">
               <label id="language" contenteditable="true" spellcheck="false">
@@ -108,14 +108,11 @@
           </div>
           <div id="bottom-stuff">
             <form id="email-form" class="noprint">
-              <label>Email (optional):</label>
+              <label>Your email:</label>
               <input type="text" id="email" />
+              <span id="email-note">optional, will not be on poster</span>
             </form>
-
             <div class="noprint official-only" id="pw-save">
-              <div class="noprint official-only" id="frozen-uid-warning">
-                please change language
-              </div>
               <input type="text" id="official-pw" />
               <i
                 id="save-icon"
@@ -123,39 +120,50 @@
                 onclick="saveTranslations()"
               ></i>
             </div>
-            <div id="disclaimer">
+            <div id="disclaimer" dir="ltr">
               Translation Commons and PanLex thank all contributors helping us
               reach indigenous communities around the world with this vital
               information.
             </div>
           </div>
+          <div class="noprint official-only warning" id="frozen-uid-warning" dir="ltr">
+            please change language
+          </div>
+          <div class="noprint official-only warning" id="pw-empty-warning" dir="ltr">
+            please enter password
+          </div>
+
         </div>
       </div>
       <div class="logos" id="bottom-logos">
-        <div id="partnership">
+        <!-- <div style="background-color:cornflowerblue;inline-size:40mm;" id="tclogo"></div> -->
+        <!-- <div style="background-color:darkred;inline-size:30mm;" id="pllogo"></div> -->
+
           <a
             href="https://translationcommons.org"
             target="_blank"
             rel="noopener"
             class="background-padding"
+            id="tclogo"
           >
-            <img class="logo" src="images/tc.png" />
+            <img id="tclogo" src="images/tc.png" />
           </a>
-          <div id="partner-text">and</div>
           <a
             href="https://panlex.org"
             target="_blank"
             rel="noopener"
             class="background-padding"
+            id="pllogo"
           >
-            <img id="pllogo" src="images/pllogo.png" />
+            <img src="images/pllogo.png" />
           </a>
-        </div>
       </div>
       <a
         id="cc-license"
+        target="_blank"
         rel="license"
         href="http://creativecommons.org/licenses/by-sa/4.0/"
+        title="This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License"
       >
         <img
           alt="Creative Commons License"
@@ -163,20 +171,7 @@
           src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png"
         />
       </a>
-      <!-- <a
-        id="cc-license"
-        rel="license"
-        href="http://creativecommons.org/licenses/by-sa/4.0/"
-        class="background-padding"
-      >
-        <img
-          alt="Creative Commons License"
-          style="border-width: 0;"
-          src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"
-        />
-      </a> -->
-
-      <div id="email-blurb" class="background-padding">
+      <div id="email-blurb" class="background-padding" dir="ltr">
         Please send suggestions or problems to
         <a href="mailto:covid19@translationcommons.org">
           covid19@translationcommons.org

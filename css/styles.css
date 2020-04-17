@@ -65,11 +65,6 @@ body {
   block-size: 35mm;
 }
 
-.logo {
-  block-size: 10.5mm;
-  padding: 2mm;
-}
-
 .iyil {
   padding-block-start: 1mm;
   padding-block-end: 1mm;
@@ -92,6 +87,7 @@ body {
   justify-content: space-between;
   visibility: hidden;
   flex-grow: 1;
+  position: relative;
 }
 
 #top-stuff {
@@ -104,7 +100,12 @@ body {
 [contenteditable="true"] {
   min-block-size: 8mm;
   min-inline-size: 48mm;
-  text-decoration: underline dotted;
+  border: 2px dotted white;
+  border-radius: 4px;
+  padding-inline-start: 2mm;
+  padding-inline-end: 2mm;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 [contenteditable="true"] br:last-child {
@@ -118,21 +119,11 @@ body {
 #stop {
   font-size: 36pt;
   margin-block-end: 4mm;
-  text-transform: uppercase;
   text-align: center;
 }
 
-#stop:focus {
-  text-transform: unset;
-}
-
 #language {
-  text-transform: capitalize;
   cursor: text;
-}
-
-#language:focus {
-  text-transform: unset;
 }
 
 .panlex-language-picker > ul {
@@ -140,7 +131,7 @@ body {
   font-weight: normal;
   max-block-size: 150mm;
   overflow: auto;
-  min-inline-size: 50mm;
+  /* min-inline-size: 50mm; */
 }
 
 .panlex-language-picker li {
@@ -152,6 +143,15 @@ body {
 
 .panlex-language-picker li:hover {
   background-color: lightgrey;
+}
+
+.panlex-language-picker li > div:first-child > span:first-child {
+  margin-inline-end: 8px;
+}
+
+.panlex-language-picker li > div:first-child > span:last-child {
+  font-size: 10pt;
+  color: grey;
 }
 
 .panlex-language-picker li > div:last-child {
@@ -170,9 +170,7 @@ body {
   align-items: flex-start;
   font-size: 18pt;
   margin-inline-start: 24mm;
-  justify-content: space-between;
-  margin-block-start: 12mm;
-  margin-block-end: 12mm;
+  justify-content: center;
   align-self: flex-start;
   flex-grow: 1;
 }
@@ -188,14 +186,22 @@ body {
   margin-inline-end: 24mm;
 }
 
-#frozen-uid-warning {
+.warning {
   visibility: hidden;
+  position: absolute;
+  z-index: 1;
+  bottom: 2mm;
+  font-size: 11pt;
   font-weight: normal;
   font-style: italic;
   color: red;
-  align-self: center;
-  position: absolute;
-  z-index: 1;
+  background-color: white;
+  border: 1px solid red;
+  border-radius: 4px;
+  padding-inline-start: 6px;
+  padding-inline-end: 6px;
+  padding-block-start: 2px;
+  padding-block-end: 2px;
 }
 
 #bottom-stuff {
@@ -208,6 +214,10 @@ body {
 #email-form {
   font-weight: normal;
   margin-block-end: 2mm;
+}
+
+#email-note {
+  font-size: 11pt;
 }
 
 #pw-save {
@@ -236,23 +246,28 @@ body {
   margin-block-start: 4mm;
   margin-block-end: 4mm;
   display: flex;
-  /* justify-content: center; */
-}
-
-#partnership {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  /* margin-inline-end: 8mm; */
-}
-
-#partner-text {
-  margin-inline-start: 2mm;
-  margin-inline-end: 2mm;
+  justify-content: center;
 }
 
 #pllogo {
-  block-size: 23.5mm;
+  max-block-size: 23.5mm;
+  max-inline-size: 29.5mm;
+  margin-inline-start: 16mm;
+}
+
+#pllogo > img {
+  max-block-size: 100%;
+  max-inline-size: 100%;
+}
+
+#tclogo {
+  max-block-size: 10.5mm;
+  max-inline-size: 44.5mm;
+}
+
+#tclogo > img {
+  max-block-size: 100%;
+  max-inline-size: 100%;
 }
 
 #cc-license {
@@ -260,6 +275,19 @@ body {
   right: 5mm;
   bottom: 0;
   z-index: 10;
+}
+
+#cc-license .cc-description {
+  position: relative;
+  top: -250px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #666;
+  color: #fff;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.2s, visibility 0.2s;
 }
 
 #disclaimer {
@@ -273,6 +301,7 @@ body {
   font-size: 10pt;
   align-self: center;
   background-color: white;
+  padding: 1.5mm;
 }
 
 #bottom-buttons {
@@ -444,6 +473,9 @@ body {
   }
 
   [contenteditable="true"] {
-    text-decoration: none;
+    border: unset;
+    border-radius: unset;
+    padding-inline-start: unset;
+    padding-inline-end: unset;
   }
 }
