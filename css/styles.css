@@ -363,6 +363,14 @@ body {
   background-color: #5e5e5e;
 }
 
+#linkedin {
+  background-color: #0073b1;
+}
+
+#linkedin:hover {
+  background-color: #005a8a;
+}
+
 #whatsapp {
   background-color: #25d366;
 }

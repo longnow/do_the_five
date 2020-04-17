@@ -34,12 +34,20 @@ const toTarget = (target) => {
 const prepTrans = (trans, plToUpper) =>
   Array.isArray(trans)
     ? trans
-        .map(([expr, i]) => `<span class="panlexese pl${i}">${plToUpper ? expr.toUpperCase() : expr}</span>`)
+        .map(
+          ([expr, i]) =>
+            `<span class="panlexese pl${i}">${
+              plToUpper ? expr.toUpperCase() : expr
+            }</span>`
+        )
         .join(" — ")
     : trans;
 
 const applyTranslations = (transMap) => {
-  transNodes.forEach((node) => (node.innerHTML = prepTrans(transMap[node.id], node.id === "stop")));
+  transNodes.forEach(
+    (node) =>
+      (node.innerHTML = prepTrans(transMap[node.id], node.id === "stop"))
+  );
   document.title = document.getElementById("stop").textContent;
 };
 
@@ -81,7 +89,10 @@ const buildUrl = () => {
   params.append("email", document.getElementById("email").value.trim());
   let pwEmpty = false;
   if (official) {
-    const pw = document.getElementById("official-pw").value.trim().toLowerCase();
+    const pw = document
+      .getElementById("official-pw")
+      .value.trim()
+      .toLowerCase();
     if (pw.length === 0) {
       pwEmpty = true;
     } else {
@@ -157,6 +168,10 @@ const shareURLBuilders = {
       url
     )}`,
   weixin: (title, url) => "",
+  linkedin: (title, url) =>
+    `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(
+      url
+    )}&title=${encodeURIComponent(title)}`,
 };
 
 const qrcode = new QRCode(document.getElementById("qrcode"), {
@@ -206,22 +221,23 @@ const changeShareURL = (e) => {
   e.preventDefault();
 };
 
-const mobile = navigator.userAgent.match(/iPhone|iPod|iPad/) || navigator.userAgent.match(/Android/);
+const mobile =
+  navigator.userAgent.match(/iPhone|iPod|iPad/) ||
+  navigator.userAgent.match(/Android/);
 
 if (mobile && navigator.share) {
   const shareButton = document.getElementById("share-button");
   shareButton.removeAttribute("onclick");
-  shareButton.addEventListener("click", () => navigator.share({ url: location.href }));
+  shareButton.addEventListener("click", () =>
+    navigator.share({ url: location.href })
+  );
 }
 
 fetch(`${backend}/langvar/${currUid}`)
   .then((r) => r.json())
   .then((langvar) => {
     frozen = langvar.official_frozen;
-    document.children[0].setAttribute(
-      "dir",
-      langvar.dir
-    );
+    document.children[0].setAttribute("dir", langvar.dir);
     document.getElementById("lang-picker").value = langvar.name_expr_txt;
     document
       .getElementById("lang-picker")
