@@ -27,14 +27,14 @@ const uniqify = (ary) => {
 let lastTarget;
 
 const toTarget = (target) => {
-  const saveScrollY = windowTop.scrollY;
+  const savedScrollY = windowTop.scrollY;
   const url = new URL(window.location);
   url.hash = target;
   window.location.replace(url);
   url.hash = "";
   window.history.replaceState(null, "", url);
-  if (windowTop.scrollY !== saveScrollY) {
-    windowTop.scroll({ left: windowTop.scollX, top: saveScrollY, behavior: 'auto' });
+  if (windowTop.scrollY !== savedScrollY) {
+    windowTop.scroll({ left: windowTop.scollX, top: savedScrollY, behavior: 'auto' });
   }
   lastTarget = target;
 };
@@ -237,17 +237,17 @@ if (navigator.maxTouchPoints && navigator.share) {
   );
 }
 
-if (window !== windowTop) {
+/*if (window !== windowTop) {
   windowTop.addEventListener("keydown", (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
       e.preventDefault();
       window.print();
     }
   });
-}
+}*/
 
 window.addEventListener("keydown", (e) => {
-  if (e.keyCode === 27 && lastTarget === 'share-popup') { // escape
+  if (e.keyCode === 27 && lastTarget !== 'share-button') { // escape
     toTarget('share-button');
   }
 });
