@@ -96,7 +96,7 @@
               <input type="text" id="email" />
               <span id="email-note">optional, will not be on poster</span>
             </form>
-            <div class="noprint official-only" id="pw-save">
+            <div class="official-only noprint" id="pw-save">
               <input type="text" id="official-pw" />
               <i
                 id="save-icon"
@@ -110,10 +110,10 @@
               information.
             </div>
           </div>
-          <div class="noprint official-only error" id="frozen-uid-error" dir="ltr">
+          <div class="official-only error noprint" id="frozen-uid-error" dir="ltr">
             this language cannot be modified
           </div>
-          <div class="noprint official-only error" id="pw-empty-error" dir="ltr">
+          <div class="official-only error noprint" id="pw-empty-error" dir="ltr">
             please enter the password
           </div>
 
@@ -184,12 +184,13 @@
         <a
           id="share-button"
           class="share-button plain"
+          title="share"
           onclick="toTarget('share-popup')"
         >
           <i class="fas fa-share-square"></i>
         </a>
 
-        <a class="share-button plain" onclick="window.print()">
+        <a class="share-button plain" title="print" onclick="window.print()">
           <i class="fas fa-print"></i>
         </a>
       </div>
@@ -213,10 +214,15 @@
       </div>
     </div>
 
-    <div id="share-popup" class="overlay light">
+    <div id="share-popup" class="overlay light noprint">
       <a class="cancel" onclick="toTarget('share-button')"></a>
       <div class="popup">
-        <div class="share-buttons noprint">
+        <div class="close-button" onclick="toTarget('share-button')">
+          <a>
+            <i class="fa fa-window-close"></i>
+          </a>
+        </div>
+        <div class="share-buttons">
           <a class="share-button app facebook" id="facebook">
             <i class="fab fa-facebook"></i>
           </a>

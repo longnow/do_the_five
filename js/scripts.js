@@ -24,6 +24,8 @@ const uniqify = (ary) => {
   return ary.filter((x, i) => ary.indexOf(x) === i);
 };
 
+let lastTarget;
+
 const toTarget = (target) => {
   const saveScrollY = windowTop.scrollY;
   const url = new URL(window.location);
@@ -34,6 +36,7 @@ const toTarget = (target) => {
   if (windowTop.scrollY !== saveScrollY) {
     windowTop.scroll({ left: windowTop.scollX, top: saveScrollY, behavior: 'auto' });
   }
+  lastTarget = target;
 };
 
 const prepTrans = (trans, plToUpper) =>
@@ -242,6 +245,12 @@ if (window !== windowTop) {
     }
   });
 }
+
+window.addEventListener("keydown", (e) => {
+  if (e.keyCode === 27 && lastTarget === 'share-popup') { // escape
+    toTarget('share-button');
+  }
+});
 
 fetch(`${backend}/langvar/${currUid}`)
   .then((r) => r.json())
