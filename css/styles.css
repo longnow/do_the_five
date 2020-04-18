@@ -302,7 +302,7 @@ body {
   font-size: 10pt;
   align-self: center;
   background-color: white;
-  padding: 1.5mm;
+  margin: 1.5mm;
 }
 
 #bottom-buttons {
@@ -482,13 +482,16 @@ body {
   }
 
   body {
-    margin: 0px;
+    margin: 0;
   }
 
   #poster {
-    margin: 10mm;
+    margin-block-start: 10mm;
+    margin-block-end: 0;
+    margin-inline-start: 10mm;
+    margin-inline-end: 10mm;
     inline-size: 189mm;
-    block-size: 276mm;
+    block-size: 266mm;
   }
 
   #poster-background {
