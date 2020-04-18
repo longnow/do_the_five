@@ -2,8 +2,9 @@ const backend = "https://apps.panlex.org/do_the_five-server";
 const borked = true;
 let frozen = false;
 
+const windowTop = window === window.top ? window : window.parent;
 const transNodes = [...document.querySelectorAll("[contenteditable='true']")];
-const initialSearchParams = new URLSearchParams(location.search);
+const initialSearchParams = new URLSearchParams(windowTop.location.search);
 const official = initialSearchParams.get("official") !== null;
 
 if (borked) {
@@ -24,9 +25,9 @@ const uniqify = (ary) => {
 };
 
 const toTarget = (target) => {
-  const url = new URL(location);
+  const url = new URL(window.location);
   url.hash = target;
-  location.replace(url);
+  window.location.replace(url);
   url.hash = "";
   window.history.replaceState(null, "", url);
 };
@@ -65,11 +66,11 @@ const populateTranslations = () => {
 };
 
 const changeLang = (e) => {
-  const newUrl = new URL(location);
+  const newUrl = new URL(windowTop.location);
   newUrl.searchParams.set("uid", e.target.dataset.uid);
   newUrl.searchParams.delete("id");
   official && newUrl.searchParams.set("official", "");
-  location = newUrl;
+  windowTop.location = newUrl;
 };
 
 const frozenUidError = new Error("frozenUid");
@@ -109,7 +110,7 @@ const buildUrl = () => {
       .then((r) => r.json())
       .then((json) => {
         const newId = json.map((n) => n.toString(36)).join("-");
-        const newUrl = new URL(location);
+        const newUrl = new URL(windowTop.location);
         newUrl.searchParams.set("uid", currUid);
         !borked && newUrl.searchParams.set("id", newId);
         return newUrl;
@@ -119,7 +120,7 @@ const buildUrl = () => {
 
 const saveTranslations = () => {
   buildUrl().then(
-    (newUrl) => (location = newUrl),
+    (newUrl) => (windowTop.location = newUrl),
     (reason) => {
       if (reason === frozenUidError) {
         showError("frozen-uid-error");
@@ -179,7 +180,7 @@ const qrcode = new QRCode(document.getElementById("qrcode"), {
   height: 500,
 });
 
-qrcode.makeCode(location.toString());
+qrcode.makeCode(windowTop.location.toString());
 
 const changeShareURL = (e) => {
   const node = e.currentTarget;
@@ -201,7 +202,7 @@ const changeShareURL = (e) => {
       }
     },
     () => {
-      newUrl = new URL(location);
+      newUrl = new URL(windowTop.location);
       newUrl.searchParams.delete("official");
       if (node.id == "weixin") {
         qrcode.makeCode(newUrl.toString());
@@ -229,8 +230,17 @@ if (mobile && navigator.share) {
   const shareButton = document.getElementById("share-button");
   shareButton.removeAttribute("onclick");
   shareButton.addEventListener("click", () =>
-    navigator.share({ url: location.href })
+    navigator.share({ url: windowTop.location.href })
   );
+}
+
+if (window !== windowTop) {
+  windowTop.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+      e.preventDefault();
+      window.print();
+    }
+  });
 }
 
 fetch(`${backend}/langvar/${currUid}`)
@@ -259,7 +269,7 @@ fetch(`${backend}/langvar/${currUid}`)
       );
     }
     [...document.getElementsByClassName("app")].forEach((node) => {
-      const newUrl = new URL(location);
+      const newUrl = new URL(windowTop.location);
       newUrl.searchParams.delete("official");
       node.href = shareURLBuilders[node.id](
         document.getElementById("stop").textContent,
