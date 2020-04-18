@@ -25,11 +25,15 @@ const uniqify = (ary) => {
 };
 
 const toTarget = (target) => {
+  const saveScrollY = windowTop.scrollY;
   const url = new URL(window.location);
   url.hash = target;
   window.location.replace(url);
   url.hash = "";
   window.history.replaceState(null, "", url);
+  if (windowTop.scrollY !== saveScrollY) {
+    windowTop.scroll({ left: windowTop.scollX, top: saveScrollY, behavior: 'auto' });
+  }
 };
 
 const prepTrans = (trans, plToUpper) =>
@@ -222,11 +226,7 @@ const changeShareURL = (e) => {
   e.preventDefault();
 };
 
-const mobile =
-  navigator.userAgent.match(/iPhone|iPod|iPad/) ||
-  navigator.userAgent.match(/Android/);
-
-if (mobile && navigator.share) {
+if (navigator.maxTouchPoints && navigator.share) {
   const shareButton = document.getElementById("share-button");
   shareButton.removeAttribute("onclick");
   shareButton.addEventListener("click", () =>
