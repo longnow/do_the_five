@@ -110,17 +110,18 @@ const buildUrl = () => {
   }
 
   if (official) {
-    const password = document
-      .getElementById("official-pw")
-      .value.trim()
-      .toLowerCase();
-    if (password.length === 0) {
-      err = passwordEmptyError;
-    } else {
-      params.append("official", password);
-    }
     if (langvar.official_frozen) {
       err = frozenUidError;
+    } else {
+      const password = document
+        .getElementById("official-pw")
+        .value.trim()
+        .toLowerCase();
+      if (password.length === 0) {
+        err = passwordEmptyError;
+      } else {
+        params.append("official", password);
+      }
     }
   }
 
