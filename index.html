@@ -17,7 +17,7 @@
   <body>
     <div id="poster">
       <div class="logos" id="top-logos">
-        <img id="covid-logo" src="images/covid-logo.svg" />
+        <img id="covid-logo" src="images/covid-logo.svg" alt="covid-19 multilingual" />
       </div>
       <div id="poster-background">
         <div id="poster-content">
@@ -35,7 +35,7 @@
           </div>
           <div id="steps">
             <div>
-              <img class="icon" src="images/wash.svg" />
+              <img class="icon" src="images/wash.svg" alt="wash" />
               <span
                 class="caption"
                 id="wash"
@@ -46,7 +46,7 @@
               </span>
             </div>
             <div>
-              <img class="icon" src="images/cough.svg" />
+              <img class="icon" src="images/cough.svg" alt="cough" />
               <span
                 class="caption"
                 id="cough"
@@ -57,7 +57,7 @@
               </span>
             </div>
             <div>
-              <img class="icon" src="images/face.svg" />
+              <img class="icon" src="images/face.svg" alt="face" />
               <span
                 class="caption"
                 id="face"
@@ -68,7 +68,7 @@
               </span>
             </div>
             <div>
-              <img class="icon" src="images/distance.svg" />
+              <img class="icon" src="images/distance.svg" alt="distance" />
               <span
                 class="caption"
                 id="distance"
@@ -79,7 +79,7 @@
               </span>
             </div>
             <div>
-              <img class="icon" src="images/home.svg" />
+              <img class="icon" src="images/home.svg" alt="home" />
               <span
                 class="caption"
                 id="home"
@@ -110,13 +110,6 @@
               information.
             </div>
           </div>
-          <div class="official-only error noprint" id="frozen-uid-error" dir="ltr">
-            this language cannot be modified
-          </div>
-          <div class="official-only error noprint" id="pw-empty-error" dir="ltr">
-            please enter the password
-          </div>
-
         </div>
       </div>
       <div class="logos" id="bottom-logos">
@@ -130,7 +123,7 @@
             class="background-padding"
             id="tclogo"
           >
-            <img id="tclogo" src="images/tc.png" />
+            <img src="images/tc.png" alt="Translation Commons" />
           </a>
           <a
             href="https://panlex.org"
@@ -139,7 +132,7 @@
             class="background-padding"
             id="pllogo"
           >
-            <img src="images/pllogo.png" />
+            <img src="images/pllogo.png" alt="PanLex" />
           </a>
       </div>
       <a
@@ -183,20 +176,20 @@
       <div>
         <a
           id="share-button"
-          class="share-button plain"
+          class="button share plain"
           title="share"
           onclick="toTarget('share-popup')"
         >
           <i class="fas fa-share-square"></i>
         </a>
 
-        <a class="share-button plain" title="print" onclick="window.print()">
+        <a class="button share plain" title="print" onclick="window.print()">
           <i class="fas fa-print"></i>
         </a>
       </div>
       <div>
         <a
-          class="share-button facebook"
+          class="button share facebook"
           href="https://www.facebook.com/COVID19Multilingual/"
           target="_blank"
           rel="noopener"
@@ -204,7 +197,7 @@
           <i class="fab fa-facebook"></i>
         </a>
         <a
-          class="share-button twitter"
+          class="button share twitter"
           href="https://twitter.com/COVID19Multling"
           target="_blank"
           rel="noopener"
@@ -214,60 +207,85 @@
       </div>
     </div>
 
-    <div id="share-popup" class="overlay light noprint">
-      <a class="cancel" onclick="toTarget('share-button')"></a>
+    <div id="share-popup" class="overlay noprint">
+      <a class="cancel" onclick="toTarget()"></a>
       <div class="popup">
-        <div class="close-button" onclick="toTarget('share-button')">
-          <a>
-            <i class="fa fa-window-close"></i>
-          </a>
-        </div>
+        <a class="button close" onclick="toTarget()">
+          <i class="fas fa-window-close"></i>
+        </a>
         <div class="share-buttons">
-          <a class="share-button app facebook" id="facebook">
+          <a class="button share app facebook" id="facebook">
             <i class="fab fa-facebook"></i>
           </a>
-          <a class="share-button app twitter" id="twitter">
+          <a class="button share app twitter" id="twitter">
             <i class="fab fa-twitter"></i>
           </a>
 
-          <a class="share-button plain app" id="linkedin">
+          <a class="button share plain app" id="linkedin">
             <i class="fab fa-linkedin"></i>
           </a>
 
-          <a class="share-button app" id="whatsapp">
+          <a class="button share app" id="whatsapp">
             <i class="fab fa-whatsapp"></i>
           </a>
 
-          <a class="share-button app" id="vk">
+          <a class="button share app" id="vk">
             <i class="fab fa-vk"></i>
           </a>
 
-          <a class="share-button app" id="telegram">
+          <a class="button share app" id="telegram">
             <i class="fab fa-telegram"></i>
           </a>
 
-          <a class="share-button app" id="weibo">
+          <a class="button share app" id="weibo">
             <i class="fab fa-weibo"></i>
           </a>
 
-          <a class="share-button app" id="weixin">
+          <a class="button share app" id="weixin">
             <i class="fab fa-weixin"></i>
           </a>
 
-          <a class="share-button app" id="qq">
+          <a class="button share app" id="qq">
             <i class="fab fa-qq"></i>
           </a>
 
-          <a class="share-button plain app" id="email">
+          <a class="button share plain app" id="email">
             <i class="fas fa-envelope"></i>
           </a>
         </div>
       </div>
     </div>
 
-    <div id="qrcode-popup" class="overlay">
+    <div id="qrcode-popup" class="overlay noprint">
       <a class="cancel" onclick="toTarget('weixin')"></a>
       <div id="qrcode" class="popup"></div>
+    </div>
+
+    <div id="error-popup" class="overlay noprint">
+      <a class="cancel" onclick="toTarget()"></a>
+      <div class="popup">
+        <a class="button close" onclick="toTarget()">
+          <i class="fas fa-window-close"></i>
+        </a>
+        <div id="error" class="error">
+          <i class="fas fa-exclamation-triangle alert-icon"></i>
+          <div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="error-message" id="frozen-uid-error" dir="ltr">
+      This language cannot be modified
+    </div>
+    <div class="error-message" id="pw-empty-error" dir="ltr">
+      Please enter the password
+    </div>
+    <div class="error-message" id="panlexese-error" dir="ltr">
+      Please enter a full phrase if possible:
+      <br><br>
+      Don't touch your face<i class="fas fa-check mark good"></i>
+      <br><br>
+      no — touch — face<i class="fas fa-times mark bad"></i>
     </div>
 
     <script>

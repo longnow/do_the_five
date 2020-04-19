@@ -20,6 +20,11 @@ const currUid = initialSearchParams.get("uid") || defaultUid;
 const browserUid = defaultUid;
 const currId = initialSearchParams.get("id") || "";
 
+const frozenUidError = new Error("frozen-uid-error");
+const borkedError = new Error("borked-error");
+const passwordEmptyError = new Error("pw-empty-error");
+const panlexeseError = new Error("panlexese-error");
+
 const uniqify = (ary) => {
   return ary.filter((x, i) => ary.indexOf(x) === i);
 };
@@ -29,7 +34,10 @@ let lastTarget;
 const toTarget = (target) => {
   const savedScrollY = windowTop.scrollY;
   const url = new URL(window.location);
-  url.hash = target;
+  url.hash = target || "";
+  if (!target) {
+    url.href += "#";
+  }
   window.location.replace(url);
   url.hash = "";
   window.history.replaceState(null, "", url);
@@ -80,11 +88,16 @@ const changeLang = (e) => {
   windowTop.location = newUrl;
 };
 
-const frozenUidError = new Error("frozenUid");
-const pwEmptyError = new Error("pwEmpty");
-
 const buildUrl = () => {
-  if (frozen) return Promise.reject(frozenUidError);
+  if (frozen) {
+    return Promise.reject({ err: frozenUidError });
+  }
+  if (borked && !official) {
+    return Promise.reject({ err: borkedError });
+  }
+
+  let err = null;
+
   const trans = Array.from(transNodes).reduce(
     (acc, node) => ({ ...acc, [node.id]: node.textContent }),
     {}
@@ -95,55 +108,75 @@ const buildUrl = () => {
     params.append(key, trans[key]);
   }
   params.append("email", document.getElementById("email").value.trim());
-  let pwEmpty = false;
+
+  if (Object.values(trans).some((val) => val.match(/—/))) {
+    err = panlexeseError;
+  }
+
   if (official) {
-    const pw = document
+    const password = document
       .getElementById("official-pw")
       .value.trim()
       .toLowerCase();
-    if (pw.length === 0) {
-      pwEmpty = true;
+    if (password.length === 0) {
+      err = passwordEmptyError;
     } else {
-      params.append("official", pw);
+      params.append("official", password);
     }
   }
 
-  const add = fetch(`${backend}/add`, { method: "POST", body: params });
-  if (pwEmpty) {
-    add.then();
-    return Promise.reject(pwEmptyError);
-  } else {
-    return add
-      .then((r) => r.json())
-      .then((json) => {
-        const newId = json.map((n) => n.toString(36)).join("-");
-        const newUrl = new URL(windowTop.location);
-        newUrl.searchParams.set("uid", currUid);
-        !borked && newUrl.searchParams.set("id", newId);
+  return fetch(`${backend}/add`, { method: "POST", body: params })
+    .then((r) => r.json())
+    .then((json) => {
+      const newId = json.map((n) => n.toString(36)).join("-");
+      const newUrl = new URL(windowTop.location);
+      newUrl.searchParams.set("uid", currUid);
+      !borked && newUrl.searchParams.set("id", newId);
+      if (err) {
+        return Promise.reject({ url: newUrl, err });
+      } else {
         return newUrl;
-      });
-  }
+      }
+    });
+};
+
+const buildUrlLax = () => {
+  return new Promise((resolve, reject) => {
+    return buildUrl().then(
+      resolve,
+      (obj) => {
+        if (obj.err === passwordEmptyError || obj.err === panlexeseError) {
+          resolve(obj.url);
+        } else {
+          reject(obj);
+        }
+      }
+    );
+  });
 };
 
 const saveTranslations = () => {
   buildUrl().then(
     (newUrl) => (windowTop.location = newUrl),
-    (reason) => {
-      if (reason === frozenUidError) {
-        showError("frozen-uid-error");
-      } else if (reason === pwEmptyError) {
-        showError("pw-empty-error");
-      } else {
-        console.log(reason);
+    (obj) => {
+      if (obj) {
+        const err = obj.err;
+        if (err === frozenUidError || err === passwordEmptyError || err === panlexeseError) {
+          showError(err);
+          return;
+        }
       }
+      console.log(obj);
     }
   );
 };
 
 const showError = (err) => {
-  document.querySelectorAll(".error").forEach((elt) => {
-    elt.style.visibility = elt.id === err ? "visible" : "hidden";
-  });
+  const errorDiv = document.getElementById("error");
+  const errorMsg = document.getElementById(err.message).cloneNode(true);
+  errorMsg.style.display = "block";
+  errorDiv.replaceChild(errorMsg, errorDiv.lastElementChild);
+  toTarget("error-popup");
 };
 
 const shareURLBuilders = {
@@ -189,44 +222,36 @@ const qrcode = new QRCode(document.getElementById("qrcode"), {
 
 qrcode.makeCode(windowTop.location.toString());
 
-const changeShareURL = (e) => {
-  const node = e.currentTarget;
-  buildUrl().then(
-    (newUrl) => {
-      newUrl.searchParams.delete("official");
-      if (node.id == "weixin") {
-        qrcode.makeCode(newUrl.toString());
-        toTarget("qrcode-popup");
-      } else {
-        window.open(
-          shareURLBuilders[node.id](
-            document.getElementById("stop").textContent,
-            newUrl
-          ),
-          "_blank",
-          "noopener"
-        );
-      }
+const buildAndShareURL = (e) => {
+  const builder = e.currentTarget.id;
+  buildUrlLax().then(
+    (url) => {
+      shareUrl(url, builder)
     },
     () => {
-      newUrl = new URL(windowTop.location);
-      newUrl.searchParams.delete("official");
-      if (node.id == "weixin") {
-        qrcode.makeCode(newUrl.toString());
-        toTarget("qrcode-popup");
-      } else {
-        window.open(
-          shareURLBuilders[node.id](
-            document.getElementById("stop").textContent,
-            newUrl
-          ),
-          "_blank",
-          "noopener"
-        );
-      }
+      shareUrl(new URL(windowTop.location), builder);
     }
   );
   e.preventDefault();
+};
+
+const shareUrl = (url, builder) => {
+  url.searchParams.delete("official");
+  url.searchParams.delete("edit");
+  if (builder === "weixin") {
+    qrcode.makeCode(url.toString());
+    toTarget("qrcode-popup");
+  } else {
+    toTarget();
+    window.open(
+      shareURLBuilders[builder](
+        document.getElementById("stop").textContent,
+        url
+      ),
+      "_blank",
+      "noopener"
+    );
+  }
 };
 
 if (navigator.maxTouchPoints && navigator.share) {
@@ -247,8 +272,8 @@ if (navigator.maxTouchPoints && navigator.share) {
 }*/
 
 window.addEventListener("keydown", (e) => {
-  if (e.keyCode === 27 && lastTarget !== 'share-button') { // escape
-    toTarget('share-button');
+  if (e.keyCode === 27 && lastTarget) { // escape
+    toTarget();
   }
 });
 
@@ -278,12 +303,13 @@ fetch(`${backend}/langvar/${currUid}`)
       );
     }
     [...document.getElementsByClassName("app")].forEach((node) => {
-      const newUrl = new URL(windowTop.location);
-      newUrl.searchParams.delete("official");
+      const url = new URL(windowTop.location);
+      url.searchParams.delete("official");
+      url.searchParams.delete("edit");
       node.href = shareURLBuilders[node.id](
         document.getElementById("stop").textContent,
-        newUrl
+        url
       );
-      node.addEventListener("click", changeShareURL);
+      node.addEventListener("click", buildAndShareURL);
     });
   });
