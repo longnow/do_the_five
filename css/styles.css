@@ -126,6 +126,10 @@ body {
   cursor: text;
 }
 
+#lang-picker {
+  inline-size: 40mm;
+}
+
 .panlex-language-picker > ul {
   color: black;
   font-weight: normal;
@@ -160,6 +164,7 @@ body {
 
 #search-icon {
   position: relative;
+  vertical-align: middle;
   inset-inline-end: 24px;
   color: #4c4c4c;
 }
@@ -314,8 +319,8 @@ body {
   right: 0;
   align-items: center;
   justify-content: center;
-  margin-block-start: 2mm;
-  margin-inline-end: 4mm;
+  margin-top: 2mm;
+  margin-right: 4mm;
 }
 
 .close:hover {
@@ -447,8 +452,8 @@ body {
   left: 0;
   align-items: center;
   justify-content: center;
-  padding-block-start: 2mm;
-  padding-inline-start: 4mm;
+  padding-top: 2mm;
+  padding-left: 4mm;
 }
 
 .error-message {
