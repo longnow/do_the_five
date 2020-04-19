@@ -20,8 +20,8 @@ const browserUid = defaultUid;
 const currId = initialSearchParams.get("id") || "";
 let langvar = {};
 
-const frozenUidError = new Error("frozen-uid-error");
 const borkedError = new Error("borked-error");
+const frozenUidError = new Error("frozen-uid-error");
 const passwordEmptyError = new Error("pw-empty-error");
 const panlexeseError = new Error("panlexese-error");
 
@@ -90,7 +90,7 @@ const changeLang = (e) => {
 
 const buildUrl = () => {
   if (borked && !official) {
-    return Promise.reject({ err: borkedError });
+    return Promise.reject(borkedError);
   }
 
   let err = null;
@@ -105,7 +105,6 @@ const buildUrl = () => {
     params.append(key, trans[key]);
   }
   params.append("email", document.getElementById("email").value.trim());
-
   if (Object.values(trans).some((val) => val.match(/—/))) {
     err = panlexeseError;
   }
@@ -120,7 +119,6 @@ const buildUrl = () => {
     } else {
       params.append("official", password);
     }
-
     if (langvar.official_frozen) {
       err = frozenUidError;
     }
@@ -129,40 +127,24 @@ const buildUrl = () => {
   return fetch(`${backend}/add`, { method: "POST", body: params })
     .then((r) => r.json())
     .then((json) => {
-      const newId = json.map((n) => n.toString(36)).join("-");
       const newUrl = new URL(windowTop.location);
       newUrl.searchParams.set("uid", currUid);
-      !borked && newUrl.searchParams.set("id", newId);
-      if (err) {
-        return Promise.reject({ url: newUrl, err });
-      } else {
-        return newUrl;
-      }
+      !borked && newUrl.searchParams.set("id", json.map((n) => n.toString(36)).join("-"));
+      return { url: newUrl, err };
     });
-};
-
-const buildUrlLax = () => {
-  return new Promise((resolve, reject) => {
-    return buildUrl().then(
-      resolve,
-      (obj) => {
-        if (obj && obj.url && obj.err !== borkedError) {
-          resolve(obj.url);
-        } else {
-          reject(obj);
-        }
-      }
-    );
-  });
 };
 
 const saveTranslations = () => {
   buildUrl().then(
-    (newUrl) => (windowTop.location = newUrl),
     (obj) => {
-      if (obj && (obj.err === frozenUidError || obj.err === passwordEmptyError || obj.err === panlexeseError)) {
+      if (obj.err) {
         showError(obj.err);
       } else {
+        windowTop.location = obj.url;
+      }
+    },
+    (err) => {
+      if (err !== borkedError) {
         console.log(obj);
       }
     }
@@ -223,9 +205,9 @@ qrcode.makeCode(windowTop.location.toString());
 
 const buildAndShareURL = (e) => {
   const builder = e.currentTarget.id;
-  buildUrlLax().then(
-    (url) => {
-      shareUrl(url, builder)
+  buildUrl().then(
+    (obj) => {
+      shareUrl(obj.url, builder)
     },
     () => {
       shareUrl(new URL(windowTop.location), builder);
