@@ -89,9 +89,6 @@ const changeLang = (e) => {
 };
 
 const buildUrl = () => {
-  if (langvar.official_frozen) {
-    return Promise.reject({ err: frozenUidError });
-  }
   if (borked && !official) {
     return Promise.reject({ err: borkedError });
   }
@@ -123,6 +120,10 @@ const buildUrl = () => {
     } else {
       params.append("official", password);
     }
+
+    if (langvar.official_frozen) {
+      err = frozenUidError;
+    }
   }
 
   return fetch(`${backend}/add`, { method: "POST", body: params })
@@ -145,7 +146,7 @@ const buildUrlLax = () => {
     return buildUrl().then(
       resolve,
       (obj) => {
-        if (obj.err === passwordEmptyError || obj.err === panlexeseError) {
+        if (obj && obj.url && obj.err !== borkedError) {
           resolve(obj.url);
         } else {
           reject(obj);
@@ -159,14 +160,11 @@ const saveTranslations = () => {
   buildUrl().then(
     (newUrl) => (windowTop.location = newUrl),
     (obj) => {
-      if (obj) {
-        const err = obj.err;
-        if (err === frozenUidError || err === passwordEmptyError || err === panlexeseError) {
-          showError(err);
-          return;
-        }
+      if (obj && (obj.err === frozenUidError || obj.err === passwordEmptyError || obj.err === panlexeseError)) {
+        showError(obj.err);
+      } else {
+        console.log(obj);
       }
-      console.log(obj);
     }
   );
 };
