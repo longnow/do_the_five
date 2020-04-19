@@ -1,6 +1,5 @@
 const backend = "https://apps.panlex.org/do_the_five-server";
 const borked = true;
-let frozen = false;
 
 const windowTop = window === window.top ? window : window.parent;
 const transNodes = [...document.querySelectorAll("[contenteditable='true']")];
@@ -19,6 +18,7 @@ const fallbackUid = "eng-000";
 const currUid = initialSearchParams.get("uid") || defaultUid;
 const browserUid = defaultUid;
 const currId = initialSearchParams.get("id") || "";
+let langvar = {};
 
 const frozenUidError = new Error("frozen-uid-error");
 const borkedError = new Error("borked-error");
@@ -89,7 +89,7 @@ const changeLang = (e) => {
 };
 
 const buildUrl = () => {
-  if (frozen) {
+  if (langvar.official_frozen) {
     return Promise.reject({ err: frozenUidError });
   }
   if (borked && !official) {
@@ -175,6 +175,7 @@ const showError = (err) => {
   const errorDiv = document.getElementById("error");
   const errorMsg = document.getElementById(err.message).cloneNode(true);
   errorMsg.style.display = "block";
+  errorMsg.innerHTML = errorMsg.innerHTML.replace(/\{langname\}/g, langvar.name_expr_txt);
   errorDiv.replaceChild(errorMsg, errorDiv.lastElementChild);
   toTarget("error-popup");
 };
@@ -279,8 +280,8 @@ window.addEventListener("keydown", (e) => {
 
 fetch(`${backend}/langvar/${currUid}`)
   .then((r) => r.json())
-  .then((langvar) => {
-    frozen = langvar.official_frozen;
+  .then((obj) => {
+    langvar = obj;
     document.children[0].setAttribute("dir", langvar.dir);
     document.getElementById("lang-picker").value = langvar.name_expr_txt;
     document
