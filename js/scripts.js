@@ -18,7 +18,8 @@ const fallbackUid = "eng-000";
 const currUid = initialSearchParams.get("uid") || defaultUid;
 const browserUid = defaultUid;
 const currId = initialSearchParams.get("id") || "";
-let langvar = {};
+let currLangvar = {};
+const panlexeseMap = {};
 
 const borkedError = new Error("borked-error");
 const frozenUidError = new Error("frozen-uid-error");
@@ -56,10 +57,12 @@ const prepTrans = (trans, plToUpper) =>
     : trans;
 
 const applyTranslations = (transMap) => {
-  transNodes.forEach(
-    (node) =>
-      (node.innerHTML = prepTrans(transMap[node.id], node.id === "stop"))
-  );
+  transNodes.forEach((node) => {
+      node.innerHTML = prepTrans(transMap[node.id], node.id === "stop");
+      if (node.querySelector(".panlexese")) {
+        panlexeseMap[node.id] = node.textContent;
+      }
+  });
   document.title = document.getElementById("stop").textContent;
 };
 
@@ -124,7 +127,9 @@ const buildUrl = () => {
   const params = new URLSearchParams();
   params.append("uid", currUid);
   for (const key in trans) {
-    params.append(key, trans[key]);
+    if (!(key in panlexeseMap && panlexeseMap[key] === trans[key])) {
+      params.append(key, trans[key]);
+    }
   }
   params.append("email", document.getElementById("email").value.trim());
   if (Object.values(trans).some((val) => val.match(/—/))) {
@@ -132,7 +137,7 @@ const buildUrl = () => {
   }
 
   if (official) {
-    if (langvar.official_frozen) {
+    if (currLangvar.official_frozen) {
       err = frozenUidError;
     } else {
       const password = document
@@ -152,7 +157,7 @@ const buildUrl = () => {
     .then((json) => {
       const newUrl = new URL(windowTop.location);
       newUrl.searchParams.set("uid", currUid);
-      !borked && newUrl.searchParams.set("id", json.map((n) => n.toString(36)).join("-"));
+      !borked && json.length && newUrl.searchParams.set("id", json.map((n) => n.toString(36)).join("-"));
       return { url: newUrl, err };
     });
 };
@@ -178,7 +183,7 @@ const showError = (err) => {
   const errorDiv = document.getElementById("error");
   const errorMsg = document.getElementById(err.message).cloneNode(true);
   errorMsg.style.display = "block";
-  errorMsg.innerHTML = errorMsg.innerHTML.replace(/\{langname\}/g, langvar.name_expr_txt);
+  errorMsg.innerHTML = errorMsg.innerHTML.replace(/\{langname\}/g, currLangvar.name_expr_txt);
   errorDiv.replaceChild(errorMsg, errorDiv.lastElementChild);
   toTarget("error-popup");
 };
@@ -284,9 +289,9 @@ window.addEventListener("keydown", (e) => {
 fetch(`${backend}/langvar/${currUid}`)
   .then((r) => r.json())
   .then((obj) => {
-    langvar = obj;
-    document.children[0].setAttribute("dir", langvar.dir);
-    document.getElementById("lang-picker").value = langvar.name_expr_txt;
+    currLangvar = obj;
+    document.children[0].setAttribute("dir", currLangvar.dir);
+    document.getElementById("lang-picker").value = currLangvar.name_expr_txt;
     document
       .getElementById("lang-picker")
       .addEventListener("language-select", changeLang);
