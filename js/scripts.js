@@ -25,10 +25,6 @@ const frozenUidError = new Error("frozen-uid-error");
 const passwordEmptyError = new Error("pw-empty-error");
 const panlexeseError = new Error("panlexese-error");
 
-const uniqify = (ary) => {
-  return ary.filter((x, i) => ary.indexOf(x) === i);
-};
-
 let lastTarget;
 
 const toTarget = (target) => {
@@ -67,17 +63,43 @@ const applyTranslations = (transMap) => {
   document.title = document.getElementById("stop").textContent;
 };
 
+const applyTooltips = (transMap) => {
+  transNodes.forEach((node) => {
+    const titleNode = node.tagName === "SPAN" ? node.parentNode : node;
+    titleNode.setAttribute("title", prepTrans(transMap[node.id], node.id === "stop"));
+  });
+};
+
 const populateTranslations = () => {
-  const url = new URL(`${backend}/`);
-  uniqify([currUid, browserUid, fallbackUid]).forEach(
-    (uid) => uid && url.searchParams.append("uid", uid)
-  );
+  const url = makeTranslationUrl([currUid, browserUid, fallbackUid]);
   !borked && currId && url.searchParams.append("id", currId);
   return fetch(url)
     .then((r) => r.json())
     .then((json) => {
       applyTranslations(json);
     });
+};
+
+const populateTooltips = () => {
+  const uids = [browserUid, fallbackUid].filter((uid) => uid !== currUid);
+  if (uids.length) {
+    const url = makeTranslationUrl(uids);
+    return fetch(url)
+      .then((r) => r.json())
+      .then((json) => {
+        applyTooltips(json);
+      });
+  } else {
+    return Promise.resolve();
+  }
+};
+
+const makeTranslationUrl = (uids) => {
+  const url = new URL(`${backend}/`);
+  uids.filter((x, i) => uids.indexOf(x) === i).forEach(
+    (uid) => uid && url.searchParams.append("uid", uid)
+  );
+  return url;
 };
 
 const changeLang = (e) => {
@@ -294,4 +316,6 @@ fetch(`${backend}/langvar/${currUid}`)
       );
       node.addEventListener("click", buildAndShareURL);
     });
+    populateTooltips();
   });
+
