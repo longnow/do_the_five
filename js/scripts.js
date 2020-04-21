@@ -1,7 +1,7 @@
 const backend = "https://apps.panlex.org/do_the_five-server";
 const borked = true;
 
-const windowTop = window === window.top ? window : window.parent;
+const windowTop = window.top;
 const transNodes = [...document.querySelectorAll("[contenteditable='true']")];
 const initialSearchParams = new URLSearchParams(windowTop.location.search);
 const official = initialSearchParams.get("official") !== null;
@@ -28,20 +28,41 @@ const panlexeseError = new Error("panlexese-error");
 
 let lastTarget;
 
-const toTarget = (target) => {
+const initFromFrame = () => {
+  document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+    link = link.cloneNode();
+    link.setAttribute("href", link.href);
+    windowTop.document.head.appendChild(link);
+  });
+
+  const div = windowTop.document.createElement("div");
+  div.id = "do_the_five";
+  document.querySelectorAll(".overlay").forEach((popup) => {
+    div.appendChild(popup);
+  });
+  windowTop.document.body.appendChild(div);
+};
+
+const toTarget = windowTop.toTarget = (target) => {
   const savedScrollY = windowTop.scrollY;
-  const url = new URL(window.location);
+  const url = new URL(windowTop.location);
   url.hash = target || "";
   if (!target) {
     url.href += "#";
   }
-  window.location.replace(url);
+  windowTop.location.replace(url);
   url.hash = "";
-  window.history.replaceState(null, "", url);
+  windowTop.history.replaceState(null, "", url);
   if (windowTop.scrollY !== savedScrollY) {
     windowTop.scroll({ left: windowTop.scollX, top: savedScrollY, behavior: 'auto' });
   }
   lastTarget = target;
+};
+
+const closeOnEsc = (e) => {
+  if (e.keyCode === 27 && lastTarget) {
+    toTarget();
+  }
 };
 
 const prepTrans = (trans, plToUpper) =>
@@ -180,7 +201,7 @@ const saveTranslations = () => {
 };
 
 const showError = (err) => {
-  const errorDiv = document.getElementById("error");
+  const errorDiv = windowTop.document.getElementById("error");
   const errorMsg = document.getElementById(err.message).cloneNode(true);
   errorMsg.style.display = "block";
   errorMsg.innerHTML = errorMsg.innerHTML.replace(/\{langname\}/g, currLangvar.name_expr_txt);
@@ -271,20 +292,10 @@ if (navigator.maxTouchPoints && navigator.share) {
   );
 }
 
-/*if (window !== windowTop) {
-  windowTop.addEventListener("keydown", (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-      e.preventDefault();
-      window.print();
-    }
-  });
-}*/
-
-window.addEventListener("keydown", (e) => {
-  if (e.keyCode === 27 && lastTarget) { // escape
-    toTarget();
-  }
-});
+window.addEventListener("keydown", closeOnEsc);
+if (window !== windowTop) {
+  windowTop.addEventListener("keydown", closeOnEsc);
+}
 
 fetch(`${backend}/langvar/${currUid}`)
   .then((r) => r.json())
@@ -322,5 +333,8 @@ fetch(`${backend}/langvar/${currUid}`)
       node.addEventListener("click", buildAndShareURL);
     });
     populateTooltips();
+    if (window !== windowTop) {
+      initFromFrame();
+    }
   });
 

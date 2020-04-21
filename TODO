@@ -1,12 +1,5 @@
-now:
-
-launch:
 look into alt. social media
-
-future:
-flag if translation = panlexese
-fix frozen uid to still pass translations along, just not make official
 add current poster language to language picker preferred translations
-add tooltip translations
 add browser language
+add noto fonts
 create interface for reviewing/editing translations
