@@ -97,7 +97,7 @@ const applyTooltips = (transMap) => {
 
 const populateTranslations = () => {
   const url = makeTranslationUrl([currUid, browserUid, fallbackUid]);
-  !borked && currId && url.searchParams.append("id", currId);
+  currId && url.searchParams.append("id", currId);
   return fetch(url)
     .then((r) => r.json())
     .then((json) => {
