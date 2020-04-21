@@ -25,6 +25,7 @@ const borkedError = new Error("borked-error");
 const frozenUidError = new Error("frozen-uid-error");
 const passwordEmptyError = new Error("pw-empty-error");
 const panlexeseError = new Error("panlexese-error");
+const titleError = new Error("title-error");
 
 let lastTarget;
 
@@ -153,8 +154,14 @@ const buildUrl = () => {
     }
   }
   params.append("email", document.getElementById("email").value.trim());
-  if (Object.values(trans).some((val) => val.match(/—/))) {
+  if (
+    Object.values(trans).some((val) => val.match(/—/)) ||
+    Object.values(trans).filter((val) => val.match(/\s-\s/)).length > 2
+  ) {
     err = panlexeseError;
+  }
+  if (trans.stop === panlexeseMap.stop) {
+    err = titleError;
   }
 
   if (official) {
@@ -302,10 +309,10 @@ fetch(`${backend}/langvar/${currUid}`)
   .then((obj) => {
     currLangvar = obj;
     document.children[0].setAttribute("dir", currLangvar.dir);
-    document.getElementById("lang-picker").value = currLangvar.name_expr_txt;
-    document
-      .getElementById("lang-picker")
-      .addEventListener("language-select", changeLang);
+    const langPicker = document.getElementById("lang-picker");
+    langPicker.value = currLangvar.name_expr_txt;
+    langPicker.addEventListener("language-select", changeLang);
+    langPicker.addEventListener("focus", (e) => (e.currentTarget.value = ""));
     document
       .getElementById("lang-picker-form")
       .addEventListener("submit", (e) => {
