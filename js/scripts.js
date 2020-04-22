@@ -51,17 +51,24 @@ const closeOnEsc = (e) => {
   }
 };
 
+const escapeHTML = (str) => str.replace(/[&<>]/g,
+  tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;'
+    }[tag] || tag));
+
 const prepTrans = (trans, plToUpper) =>
   Array.isArray(trans)
     ? trans
         .map(
           ([expr, i]) =>
             `<span class="panlexese pl${i}">${
-              plToUpper ? expr.toUpperCase() : expr
+              escapeHTML(plToUpper ? expr.toUpperCase() : expr)
             }</span>`
         )
         .join(" — ")
-    : trans;
+    : escapeHTML(trans);
 
 const applyTranslations = (transMap) => {
   transNodes.forEach((node) => {
@@ -139,14 +146,13 @@ const buildUrl = () => {
     }
   }
   params.append("email", document.getElementById("email").value.trim());
-  if (
-    Object.values(trans).some((val) => val.match(/—/)) ||
-    Object.values(trans).filter((val) => val.match(/\s-\s/)).length > 2
-  ) {
-    err = panlexeseError;
-  }
   if (trans.stop === panlexeseMap.stop) {
     err = titleError;
+  }
+  if (Object.keys(trans).some(
+    (key) => trans[key].match(/—| - /) && !(key === "stop" && trans.stop === panlexeseMap.stop)
+  )) {
+    err = panlexeseError;
   }
 
   if (official) {
@@ -186,7 +192,7 @@ const saveTranslations = () => {
     },
     (err) => {
       if (err !== borkedError) {
-        console.log(obj);
+        console.log(err);
       }
     }
   );
@@ -196,7 +202,11 @@ const showError = (err) => {
   const errorDiv = windowTop.document.getElementById("error");
   const errorMsg = document.getElementById(err.message).cloneNode(true);
   errorMsg.style.display = "block";
-  errorMsg.innerHTML = errorMsg.innerHTML.replace(/\{langname\}/g, currLangvar.name_expr_txt);
+  if (err === titleError) {
+    errorMsg.innerHTML = errorMsg.innerHTML.replace(/\{title\}/, escapeHTML(document.getElementById("stop").textContent));
+  } else if (err === frozenUidError) {
+    errorMsg.innerHTML = errorMsg.innerHTML.replace(/\{langname\}/, escapeHTML(currLangvar.name_expr_txt));
+  }
   errorDiv.replaceChild(errorMsg, errorDiv.lastElementChild);
   toTarget("error-popup");
 };
@@ -278,7 +288,6 @@ const initialWidth = document.getElementById("poster").getBoundingClientRect().w
 const resize = () => {
   const container = document.getElementById("container");
   const scale = (0.95 * windowTop.document.documentElement.clientWidth) / initialWidth;
-  console.log(scale);
   if (scale < 1) {
     container.style.transform = `scale(${scale})`;
     document.body.style.height = Number(container.getBoundingClientRect().height) + 'px';
