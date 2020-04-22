@@ -3,7 +3,6 @@
 <html id="do_the_five">
   <head>
     <meta charset="utf-8" />
-
     <title>STOP CORONAVIRUS</title>
     <meta name="description" content="Stop Coronavirus poster" />
     <meta name="author" content="Translation Commons & PanLex" />
@@ -15,107 +14,105 @@
   </head>
 
   <body>
-    <div id="poster">
-      <div class="logos" id="top-logos">
-        <img id="covid-logo" src="images/covid-logo.svg" alt="covid-19 multilingual" />
-      </div>
-      <div id="poster-background">
-        <div id="poster-content">
-          <div id="top-stuff">
-            <div id="stop" contenteditable="true" spellcheck="false">
-              STOP CORONAVIRUS
+    <div id="container">
+      <div id="poster">
+        <div class="logos" id="top-logos">
+          <img id="covid-logo" src="images/covid-logo.svg" alt="Covid-19 Multilingual" />
+        </div>
+        <div id="poster-background">
+          <div id="poster-content">
+            <div id="top-stuff">
+              <div id="stop" contenteditable="true" spellcheck="false">
+                STOP CORONAVIRUS
+              </div>
+              <form class="noprint" id="lang-picker-form">
+                <label id="language" contenteditable="true" spellcheck="false">
+                  Language
+                </label>
+                <input type="text" is="panlex-language-picker" id="lang-picker" autocomplete="off" />
+                <i id="search-icon" class="fas fa-search"></i>
+              </form>
             </div>
-            <form class="noprint" id="lang-picker-form">
-              <label id="language" contenteditable="true" spellcheck="false">
-                Language
-              </label>
-              <input type="text" is="panlex-language-picker" id="lang-picker" autocomplete="off" />
-              <i id="search-icon" class="fas fa-search"></i>
-            </form>
-          </div>
-          <div id="steps">
-            <div>
-              <img class="icon" src="images/wash.svg" alt="wash" />
-              <span
-                class="caption"
-                id="wash"
-                contenteditable="true"
-                spellcheck="false"
-              >
-                Wash your hands
-              </span>
+            <div id="steps">
+              <div>
+                <img class="icon" src="images/wash.svg" alt="wash" />
+                <span
+                  class="caption"
+                  id="wash"
+                  contenteditable="true"
+                  spellcheck="false"
+                >
+                  Wash your hands
+                </span>
+              </div>
+              <div>
+                <img class="icon" src="images/cough.svg" alt="cough" />
+                <span
+                  class="caption"
+                  id="cough"
+                  contenteditable="true"
+                  spellcheck="false"
+                >
+                  Cough into your elbow
+                </span>
+              </div>
+              <div>
+                <img class="icon" src="images/face.svg" alt="face" />
+                <span
+                  class="caption"
+                  id="face"
+                  contenteditable="true"
+                  spellcheck="false"
+                >
+                  Don't touch your face
+                </span>
+              </div>
+              <div>
+                <img class="icon" src="images/distance.svg" alt="distance" />
+                <span
+                  class="caption"
+                  id="distance"
+                  contenteditable="true"
+                  spellcheck="false"
+                >
+                  Keep distance
+                </span>
+              </div>
+              <div>
+                <img class="icon" src="images/home.svg" alt="home" />
+                <span
+                  class="caption"
+                  id="home"
+                  contenteditable="true"
+                  spellcheck="false"
+                >
+                  Stay home
+                </span>
+              </div>
             </div>
-            <div>
-              <img class="icon" src="images/cough.svg" alt="cough" />
-              <span
-                class="caption"
-                id="cough"
-                contenteditable="true"
-                spellcheck="false"
-              >
-                Cough into your elbow
-              </span>
-            </div>
-            <div>
-              <img class="icon" src="images/face.svg" alt="face" />
-              <span
-                class="caption"
-                id="face"
-                contenteditable="true"
-                spellcheck="false"
-              >
-                Don't touch your face
-              </span>
-            </div>
-            <div>
-              <img class="icon" src="images/distance.svg" alt="distance" />
-              <span
-                class="caption"
-                id="distance"
-                contenteditable="true"
-                spellcheck="false"
-              >
-                Keep distance
-              </span>
-            </div>
-            <div>
-              <img class="icon" src="images/home.svg" alt="home" />
-              <span
-                class="caption"
-                id="home"
-                contenteditable="true"
-                spellcheck="false"
-              >
-                Stay home
-              </span>
-            </div>
-          </div>
-          <div id="bottom-stuff">
-            <form id="email-form" class="noprint">
-              <label>Your email:</label>
-              <input type="text" id="email" />
-              <span id="email-note">optional, will not be on poster</span>
-            </form>
-            <div class="official-only noprint" id="pw-save">
-              <input type="text" id="official-pw" autocomplete="off" />
-              <i
-                id="save-icon"
-                class="fas fa-save"
-                onclick="saveTranslations()"
-              ></i>
-            </div>
-            <div id="disclaimer" dir="ltr">
-              Translation Commons and PanLex thank all contributors helping us
-              reach indigenous communities around the world with this vital
-              information.
+            <div id="bottom-stuff">
+              <form id="email-form" class="noprint">
+                <label>Your email:</label>
+                <input type="text" id="email" />
+                <span id="email-note">optional, will not be on poster</span>
+              </form>
+              <div class="official-only noprint" id="pw-save">
+                <input type="text" id="official-pw" autocomplete="off" />
+                <i
+                  id="save-icon"
+                  class="fas fa-save"
+                  onclick="saveTranslations()"
+                ></i>
+              </div>
+              <div id="disclaimer" dir="ltr">
+                Translation Commons and PanLex thank all contributors helping us
+                reach indigenous communities around the world with this vital
+                information.
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="logos" id="bottom-logos">
-        <!-- <div style="background-color:cornflowerblue;inline-size:40mm;" id="tclogo"></div> -->
-        <!-- <div style="background-color:darkred;inline-size:30mm;" id="pllogo"></div> -->
-
+        <div class="logos" id="bottom-logos">
           <a
             href="https://translationcommons.org"
             target="_blank"
@@ -134,176 +131,177 @@
           >
             <img src="images/pllogo.png" alt="PanLex" />
           </a>
-      </div>
-      <a
-        id="cc-license"
-        target="_blank"
-        rel="noopener"
-        href="http://creativecommons.org/licenses/by-sa/4.0/"
-        title="This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License"
-      >
+        </div>
+        <a
+          id="cc-license"
+          target="_blank"
+          rel="noopener"
+          href="http://creativecommons.org/licenses/by-sa/4.0/"
+          title="This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License"
+        >
+          <img
+            alt="Creative Commons License"
+            style="border-width: 0;"
+            src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png"
+          />
+        </a>
+        <div id="email-blurb" class="background-padding" dir="ltr">
+          Please send suggestions or problems to
+          <a
+            target="_blank"
+            rel="noopener"
+            href="mailto:covid19@translationcommons.org"
+          >
+            covid19@translationcommons.org
+          </a>
+        </div>
+        <img class="decoration" id="top-left" src="images/top-left-circles.svg" />
         <img
-          alt="Creative Commons License"
-          style="border-width: 0;"
-          src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png"
+          class="decoration"
+          id="top-right"
+          src="images/top-right-circles.svg"
         />
-      </a>
-      <div id="email-blurb" class="background-padding" dir="ltr">
-        Please send suggestions or problems to
-        <a
-          target="_blank"
-          rel="noopener"
-          href="mailto:covid19@translationcommons.org"
-        >
-          covid19@translationcommons.org
-        </a>
+        <img
+          class="decoration"
+          id="bottom-left"
+          src="images/bottom-left-circles.svg"
+        />
+        <img
+          class="decoration"
+          id="bottom-right"
+          src="images/bottom-right-circles.svg"
+        />
       </div>
-      <img class="decoration" id="top-left" src="images/top-left-circles.svg" />
-      <img
-        class="decoration"
-        id="top-right"
-        src="images/top-right-circles.svg"
-      />
-      <img
-        class="decoration"
-        id="bottom-left"
-        src="images/bottom-left-circles.svg"
-      />
-      <img
-        class="decoration"
-        id="bottom-right"
-        src="images/bottom-right-circles.svg"
-      />
-    </div>
 
-    <div id="bottom-buttons" class="noprint">
-      <div>
-        <a
-          id="share-button"
-          class="button share plain"
-          title="share"
-          onclick="toTarget('share-popup')"
-        >
-          <i class="fas fa-share-square"></i>
-        </a>
+      <div id="bottom-buttons" class="noprint">
+        <div>
+          <a
+            id="share-button"
+            class="button share plain"
+            title="share"
+            onclick="toTarget('share-popup')"
+          >
+            <i class="fas fa-share-square"></i>
+          </a>
 
-        <a class="button share plain" title="print" onclick="window.print()">
-          <i class="fas fa-print"></i>
-        </a>
-      </div>
-      <div>
-        <a
-          class="button share facebook"
-          href="https://www.facebook.com/COVID19Multilingual/"
-          target="_blank"
-          rel="noopener"
-        >
-          <i class="fab fa-facebook"></i>
-        </a>
-        <a
-          class="button share twitter"
-          href="https://twitter.com/COVID19Multling"
-          target="_blank"
-          rel="noopener"
-        >
-          <i class="fab fa-twitter"></i>
-        </a>
-      </div>
-    </div>
-
-    <div id="share-popup" class="overlay noprint">
-      <a class="cancel" onclick="toTarget()"></a>
-      <div class="popup">
-        <a class="button close" onclick="toTarget()">
-          <i class="fas fa-window-close"></i>
-        </a>
-        <div class="share-buttons">
-          <a class="button share app facebook" id="facebook">
+          <a class="button share plain" title="print" onclick="window.print()">
+            <i class="fas fa-print"></i>
+          </a>
+        </div>
+        <div>
+          <a
+            class="button share facebook"
+            href="https://www.facebook.com/COVID19Multilingual/"
+            target="_blank"
+            rel="noopener"
+          >
             <i class="fab fa-facebook"></i>
           </a>
-          <a class="button share app twitter" id="twitter">
+          <a
+            class="button share twitter"
+            href="https://twitter.com/COVID19Multling"
+            target="_blank"
+            rel="noopener"
+          >
             <i class="fab fa-twitter"></i>
           </a>
-
-          <a class="button share plain app" id="linkedin">
-            <i class="fab fa-linkedin"></i>
-          </a>
-
-          <a class="button share app" id="whatsapp">
-            <i class="fab fa-whatsapp"></i>
-          </a>
-
-          <a class="button share app" id="vk">
-            <i class="fab fa-vk"></i>
-          </a>
-
-          <a class="button share app" id="telegram">
-            <i class="fab fa-telegram"></i>
-          </a>
-
-          <a class="button share app" id="weibo">
-            <i class="fab fa-weibo"></i>
-          </a>
-
-          <a class="button share app" id="weixin">
-            <i class="fab fa-weixin"></i>
-          </a>
-
-          <a class="button share app" id="qq">
-            <i class="fab fa-qq"></i>
-          </a>
-
-          <a class="button share plain app" id="email">
-            <i class="fas fa-envelope"></i>
-          </a>
         </div>
       </div>
-    </div>
 
-    <div id="qrcode-popup" class="overlay noprint">
-      <a class="cancel" onclick="toTarget('weixin')"></a>
-      <div id="qrcode" class="popup"></div>
-    </div>
+      <div id="share-popup" class="overlay noprint">
+        <a class="cancel" onclick="toTarget()"></a>
+        <div class="popup">
+          <a class="button close" onclick="toTarget()">
+            <i class="fas fa-window-close"></i>
+          </a>
+          <div class="share-buttons">
+            <a class="button share app facebook" id="facebook">
+              <i class="fab fa-facebook"></i>
+            </a>
+            <a class="button share app twitter" id="twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
 
-    <div id="error-popup" class="overlay noprint">
-      <a class="cancel" onclick="toTarget()"></a>
-      <div class="popup">
-        <a class="button close" onclick="toTarget()">
-          <i class="fas fa-window-close"></i>
-        </a>
-        <div id="error" class="error">
-          <i class="fas fa-exclamation-triangle alert-icon"></i>
-          <div></div>
+            <a class="button share plain app" id="linkedin">
+              <i class="fab fa-linkedin"></i>
+            </a>
+
+            <a class="button share app" id="whatsapp">
+              <i class="fab fa-whatsapp"></i>
+            </a>
+
+            <a class="button share app" id="vk">
+              <i class="fab fa-vk"></i>
+            </a>
+
+            <a class="button share app" id="telegram">
+              <i class="fab fa-telegram"></i>
+            </a>
+
+            <a class="button share app" id="weibo">
+              <i class="fab fa-weibo"></i>
+            </a>
+
+            <a class="button share app" id="weixin">
+              <i class="fab fa-weixin"></i>
+            </a>
+
+            <a class="button share app" id="qq">
+              <i class="fab fa-qq"></i>
+            </a>
+
+            <a class="button share plain app" id="email">
+              <i class="fas fa-envelope"></i>
+            </a>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="error-message" id="frozen-uid-error" dir="ltr">
-      The language “{langname}” cannot be modified.
-      If you have corrections, please contact us at the email below.
-      If you did not mean to choose it, please choose the correct language.
-    </div>
-    <div class="error-message" id="pw-empty-error" dir="ltr">
-      Please enter the password.
-    </div>
-    <div class="error-message" id="panlexese-error" dir="ltr">
-      Please enter a full phrase if possible:
-      <br><br>
-      Don't touch your face<i class="fas fa-check mark good"></i>
-      <br><br>
-      no — touch — face<i class="fas fa-times mark bad"></i>
-    </div>
-    <div class="error-message" id="title-error" dir="ltr">
-      Please translate the poster title at the top.
-    </div>
+      <div id="qrcode-popup" class="overlay noprint">
+        <a class="cancel" onclick="toTarget('weixin')"></a>
+        <div id="qrcode" class="popup"></div>
+      </div>
 
-    <script>
-      if(this.customElements)
-        try{customElements.define('built-in',document.createElement('p').constructor,{'extends':'p'})}
-        catch(s){document.write('<script src="js/webcomponents-polyfill.js"><\x2fscript>')}
-    </script>
-    <script src="js/panlex-language-picker.js?v=1"></script>
-    <script src="js/qrcode.min.js"></script>
-    <script src="js/scripts.js?v=5"></script>
+      <div id="error-popup" class="overlay noprint">
+        <a class="cancel" onclick="toTarget()"></a>
+        <div class="popup">
+          <a class="button close" onclick="toTarget()">
+            <i class="fas fa-window-close"></i>
+          </a>
+          <div id="error" class="error">
+            <i class="fas fa-exclamation-triangle alert-icon"></i>
+            <div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="error-message" id="frozen-uid-error" dir="ltr">
+        The language “{langname}” cannot be modified.
+        If you have corrections, please contact us at the email below.
+        If you did not mean to choose it, please choose the correct language.
+      </div>
+      <div class="error-message" id="pw-empty-error" dir="ltr">
+        Please enter the password.
+      </div>
+      <div class="error-message" id="panlexese-error" dir="ltr">
+        Please enter a full phrase if possible:
+        <br><br>
+        Don't touch your face<i class="fas fa-check mark good"></i>
+        <br><br>
+        no — touch — face<i class="fas fa-times mark bad"></i>
+      </div>
+      <div class="error-message" id="title-error" dir="ltr">
+        Please translate the poster title at the top.
+      </div>
+
+      <script>
+        if(this.customElements)
+          try{customElements.define('built-in',document.createElement('p').constructor,{'extends':'p'})}
+          catch(s){document.write('<script src="js/webcomponents-polyfill.js"><\x2fscript>')}
+      </script>
+      <script src="js/panlex-language-picker.js?v=1"></script>
+      <script src="js/qrcode.min.js"></script>
+      <script src="js/scripts.js?v=5"></script>
+    </div>
   </body>
 </html>

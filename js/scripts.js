@@ -29,21 +29,6 @@ const titleError = new Error("title-error");
 
 let lastTarget;
 
-const initFromFrame = () => {
-  document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
-    link = link.cloneNode();
-    link.setAttribute("href", link.href);
-    windowTop.document.head.appendChild(link);
-  });
-
-  const div = windowTop.document.createElement("div");
-  div.id = "do_the_five";
-  document.querySelectorAll(".overlay").forEach((popup) => {
-    div.appendChild(popup);
-  });
-  windowTop.document.body.appendChild(div);
-};
-
 const toTarget = windowTop.toTarget = (target) => {
   const savedScrollY = windowTop.scrollY;
   const url = new URL(windowTop.location);
@@ -257,8 +242,6 @@ const qrcode = new QRCode(document.getElementById("qrcode"), {
   height: 500,
 });
 
-qrcode.makeCode(windowTop.location.toString());
-
 const buildAndShareURL = (e) => {
   const builder = e.currentTarget.id;
   buildUrl().then(
@@ -291,18 +274,73 @@ const shareUrl = (url, builder) => {
   }
 };
 
-if (navigator.maxTouchPoints && navigator.share) {
-  const shareButton = document.getElementById("share-button");
-  shareButton.removeAttribute("onclick");
-  shareButton.addEventListener("click", () =>
-    navigator.share({ url: windowTop.location.href })
-  );
-}
+const initialWidth = document.getElementById("poster").getBoundingClientRect().width;
+const resize = () => {
+  const container = document.getElementById("container");
+  const scale = (0.95 * windowTop.document.documentElement.clientWidth) / initialWidth;
+  console.log(scale);
+  if (scale < 1) {
+    container.style.transform = `scale(${scale})`;
+    document.body.style.height = Number(container.getBoundingClientRect().height) + 'px';
+  } else {
+    container.style.transform = null;
+    document.body.style.height = null;
+  }
+};
 
-window.addEventListener("keydown", closeOnEsc);
-if (window !== windowTop) {
+const init = () => {
+  if (!official) {
+    [...document.getElementsByClassName("official-only")].forEach(
+      (node) => (node.style.display = "none")
+    );
+  }
+  [...document.getElementsByClassName("app")].forEach((node) => {
+    const url = new URL(windowTop.location);
+    url.searchParams.delete("official");
+    url.searchParams.delete("edit");
+    node.href = shareURLBuilders[node.id](
+      document.getElementById("stop").textContent,
+      url
+    );
+    node.addEventListener("click", buildAndShareURL);
+  });
+  if (navigator.maxTouchPoints && navigator.share) {
+    const shareButton = document.getElementById("share-button");
+    shareButton.removeAttribute("onclick");
+    shareButton.addEventListener("click", () =>
+      navigator.share({ url: windowTop.location.href })
+    );
+  }
+  populateTooltips();
+  window.addEventListener("keydown", closeOnEsc);
+  if (window !== windowTop) {
+    initFromFrame();
+  }
+  windowTop.addEventListener("resize", resize);
+  resize();
+};
+
+const initFromFrame = () => {
   windowTop.addEventListener("keydown", closeOnEsc);
-}
+  windowTop.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "p") {
+      e.preventDefault();
+      window.print();
+    }
+  });
+
+  document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+    link = link.cloneNode();
+    link.setAttribute("href", link.href);
+    windowTop.document.head.appendChild(link);
+  });
+  const div = windowTop.document.createElement("div");
+  div.id = "do_the_five";
+  document.querySelectorAll(".overlay").forEach((popup) => {
+    div.appendChild(popup);
+  });
+  windowTop.document.body.appendChild(div);
+};
 
 fetch(`${backend}/langvar/${currUid}`)
   .then((r) => r.json())
@@ -323,25 +361,7 @@ fetch(`${backend}/langvar/${currUid}`)
     return populateTranslations();
   })
   .finally(() => {
-    document.getElementById("poster-content").style.visibility = "visible";
-    if (!official) {
-      [...document.getElementsByClassName("official-only")].forEach(
-        (node) => (node.style.display = "none")
-      );
-    }
-    [...document.getElementsByClassName("app")].forEach((node) => {
-      const url = new URL(windowTop.location);
-      url.searchParams.delete("official");
-      url.searchParams.delete("edit");
-      node.href = shareURLBuilders[node.id](
-        document.getElementById("stop").textContent,
-        url
-      );
-      node.addEventListener("click", buildAndShareURL);
-    });
-    populateTooltips();
-    if (window !== windowTop) {
-      initFromFrame();
-    }
+    init();
+    document.body.style.visibility = "visible";
   });
 

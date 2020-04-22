@@ -3,16 +3,19 @@
 }
 
 #do_the_five body {
+  visibility: hidden;
   display: flex;
   align-items: center;
   flex-direction: column;
+  margin-block-start: 5mm;
+  margin-block-end: 5mm;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  padding: 0;
 }
 
-#do_the_five .background-padding {
-  padding: 0.5mm;
-  border-radius: 2mm;
-  background-color: white;
-  z-index: 10;
+#do_the_five #container {
+  transform-origin: top;
 }
 
 #do_the_five #poster {
@@ -25,6 +28,13 @@
   border: 1px black solid;
   position: relative;
   overflow: hidden;
+}
+
+#do_the_five .background-padding {
+  padding: 0.5mm;
+  border-radius: 2mm;
+  background-color: white;
+  z-index: 10;
 }
 
 #do_the_five .decoration {
@@ -68,11 +78,6 @@
   block-size: 35mm;
 }
 
-#do_the_five .iyil {
-  padding-block-start: 1mm;
-  padding-block-end: 1mm;
-}
-
 #do_the_five #poster-background {
   margin-inline-start: 12mm;
   margin-inline-end: 12mm;
@@ -88,7 +93,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  visibility: hidden;
   flex-grow: 1;
   position: relative;
 }
@@ -515,16 +519,12 @@
 }
 
 #do_the_five #error-popup .popup {
-  max-inline-size: 120mm;
+  max-inline-size: 50vw;
 }
 
 @media print {
   @page {
     size: A4;
-    margin: 0;
-  }
-
-  #do_the_five body {
     margin: 0;
   }
 
