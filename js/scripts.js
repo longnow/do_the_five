@@ -56,33 +56,35 @@ const escapeHTML = (str) => str.replace(/[&<>]/g,
       '>': '&gt;'
     }[tag] || tag));
 
-const prepTrans = (trans, plToUpper) => {
+const prepTransHTML = (trans, plToUpper) => {
   return Array.isArray(trans)
     ?
-      {
-        html:
-          trans
-          .map(
-            ([expr, i]) =>
-              `<span class="panlexese pl${i}">${
-                escapeHTML(plToUpper ? expr.toUpperCase() : expr)
-              }</span>`
-          )
-          .join(" — "),
-        panlexese: true
-      }
+      trans
+        .map(
+          ([expr, i]) =>
+            `<span class="panlexese pl${i}">${
+              escapeHTML(plToUpper ? expr.toUpperCase() : expr)
+            }</span>`
+        )
+        .join(" — ")
     :
-      {
-        html: escapeHTML(trans),
-        panlexese: false
-      };
+      escapeHTML(trans);
+};
+
+const prepTransText = (trans, plToUpper) => {
+  return Array.isArray(trans)
+    ?
+      trans
+        .map(([expr, i]) => plToUpper ? expr.toUpperCase() : expr)
+        .join(" — ")
+    :
+      trans;
 };
 
 const applyTranslations = (transMap) => {
   transNodes.forEach((node) => {
-    const trans = prepTrans(transMap[node.id], node.id === "stop");
-    node.innerHTML = trans.html;
-    if ((!borked || official) && trans.panlexese) {
+    node.innerHTML = prepTransHTML(transMap[node.id], node.id === "stop");
+    if ((!borked || official) && Array.isArray(transMap[node.id])) {
       panlexeseMap[node.id] = node.textContent;
       node.classList.add("highlight-dark");
       node.addEventListener("input", (e) => (node.classList.remove("highlight-dark")), { once: true });
@@ -94,7 +96,7 @@ const applyTranslations = (transMap) => {
 const applyTooltips = (transMap) => {
   transNodes.forEach((node) => {
     const titleNode = node.tagName === "SPAN" ? node.parentNode : node;
-    titleNode.setAttribute("title", prepTrans(transMap[node.id], node.id === "stop").html);
+    titleNode.setAttribute("title", prepTransText(transMap[node.id], node.id === "stop"));
   });
 };
 
@@ -109,9 +111,8 @@ const populateTranslations = () => {
 };
 
 const populateTooltips = () => {
-  const uids = [browserUid, fallbackUid].filter((uid) => uid !== currUid);
-  if (uids.length) {
-    const url = makeTranslationUrl(uids);
+  if (browserUid !== currUid) {
+    const url = makeTranslationUrl([browserUid, fallbackUid]);
     return fetch(url)
       .then((r) => r.json())
       .then((json) => {
