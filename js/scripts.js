@@ -6,11 +6,9 @@ const transNodes = [...document.querySelectorAll("[contenteditable='true']")];
 const initialSearchParams = new URLSearchParams(windowTop.location.search);
 const official = initialSearchParams.get("official") !== null;
 
-if (borked) {
-  if (!official) {
-    transNodes.forEach((node) => (node.contentEditable = false));
-    document.getElementById("email-form").style.display = "none";
-  }
+if (borked && !official) {
+  transNodes.forEach((node) => (node.contentEditable = false));
+  document.getElementById("email-form").style.display = "none";
 }
 
 const defaultUid = "eng-000";
@@ -58,22 +56,33 @@ const escapeHTML = (str) => str.replace(/[&<>]/g,
       '>': '&gt;'
     }[tag] || tag));
 
-const prepTrans = (trans, plToUpper) =>
-  Array.isArray(trans)
-    ? trans
-        .map(
-          ([expr, i]) =>
-            `<span class="panlexese pl${i}">${
-              escapeHTML(plToUpper ? expr.toUpperCase() : expr)
-            }</span>`
-        )
-        .join(" — ")
-    : escapeHTML(trans);
+const prepTrans = (trans, plToUpper) => {
+  return Array.isArray(trans)
+    ?
+      {
+        html:
+          trans
+          .map(
+            ([expr, i]) =>
+              `<span class="panlexese pl${i}">${
+                escapeHTML(plToUpper ? expr.toUpperCase() : expr)
+              }</span>`
+          )
+          .join(" — "),
+        panlexese: true
+      }
+    :
+      {
+        html: escapeHTML(trans),
+        panlexese: false
+      };
+};
 
 const applyTranslations = (transMap) => {
   transNodes.forEach((node) => {
-    node.innerHTML = prepTrans(transMap[node.id], node.id === "stop");
-    if (node.querySelector(".panlexese")) {
+    const trans = prepTrans(transMap[node.id], node.id === "stop");
+    node.innerHTML = trans.html;
+    if ((!borked || official) && trans.panlexese) {
       panlexeseMap[node.id] = node.textContent;
       node.classList.add("highlight-dark");
       node.addEventListener("input", (e) => (node.classList.remove("highlight-dark")), { once: true });
@@ -85,7 +94,7 @@ const applyTranslations = (transMap) => {
 const applyTooltips = (transMap) => {
   transNodes.forEach((node) => {
     const titleNode = node.tagName === "SPAN" ? node.parentNode : node;
-    titleNode.setAttribute("title", prepTrans(transMap[node.id], node.id === "stop"));
+    titleNode.setAttribute("title", prepTrans(transMap[node.id], node.id === "stop").html);
   });
 };
 
