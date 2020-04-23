@@ -200,15 +200,13 @@ const saveTranslations = () => {
 };
 
 const showError = (err) => {
-  const errorDiv = windowTop.document.getElementById("error");
-  const errorMsg = document.getElementById(err.message).cloneNode(true);
-  errorMsg.style.display = "block";
+  let errorHTML = document.getElementById(err.message).innerHTML;
   if (err === titleError) {
-    errorMsg.innerHTML = errorMsg.innerHTML.replace(/\{title\}/, escapeHTML(document.getElementById("stop").textContent));
+    errorHTML = errorHTML.replace(/\{title\}/, escapeHTML(document.getElementById("stop").textContent));
   } else if (err === frozenUidError) {
-    errorMsg.innerHTML = errorMsg.innerHTML.replace(/\{langname\}/, escapeHTML(currLangvar.name_expr_txt));
+    errorHTML = errorHTML.replace(/\{langname\}/, escapeHTML(currLangvar.name_expr_txt));
   }
-  errorDiv.replaceChild(errorMsg, errorDiv.firstElementChild);
+  windowTop.document.getElementById("error").innerHTML = errorHTML;
   toTarget("error-popup");
 };
 

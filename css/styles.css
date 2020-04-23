@@ -498,9 +498,6 @@
 }
 
 #do_the_five .error {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   margin: 4mm;
 }
 
