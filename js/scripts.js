@@ -75,8 +75,8 @@ const applyTranslations = (transMap) => {
     node.innerHTML = prepTrans(transMap[node.id], node.id === "stop");
     if (node.querySelector(".panlexese")) {
       panlexeseMap[node.id] = node.textContent;
-      node.classList.add("highlight");
-      node.addEventListener("input", (e) => (node.classList.remove("highlight")), { once: true });
+      node.classList.add("highlight-dark");
+      node.addEventListener("input", (e) => (node.classList.remove("highlight-dark")), { once: true });
     }
   });
   document.title = document.getElementById("stop").textContent;
@@ -134,7 +134,7 @@ const buildUrl = () => {
     return Promise.reject(borkedError);
   }
 
-  let err = null;
+  const obj = { err: null, highlight: null };
   const trans = Array.from(transNodes).reduce(
     (acc, node) => ({ ...acc, [node.id]: node.textContent }),
     {}
@@ -148,24 +148,27 @@ const buildUrl = () => {
   }
   params.append("email", document.getElementById("email").value.trim());
   if (trans.stop === panlexeseMap.stop) {
-    err = titleError;
+    obj.err = titleError;
+    obj.highlight = "stop";
   }
   if (Object.keys(trans).some(
     (key) => trans[key].match(/—| - /) && !(key === "stop" && trans.stop === panlexeseMap.stop)
   )) {
-    err = panlexeseError;
+    obj.err = panlexeseError;
+    obj.highlight = null;
   }
 
   if (official) {
     if (currLangvar.official_frozen) {
-      err = frozenUidError;
+      obj.err = frozenUidError;
     } else {
       const password = document
         .getElementById("official-pw")
         .value.trim()
         .toLowerCase();
       if (password.length === 0) {
-        err = passwordEmptyError;
+        obj.err = passwordEmptyError;
+        obj.highlight = "official-pw";
       } else {
         params.append("official", password);
       }
@@ -175,10 +178,10 @@ const buildUrl = () => {
   return fetch(`${backend}/add`, { method: "POST", body: params })
     .then((r) => r.json())
     .then((json) => {
-      const newUrl = new URL(windowTop.location);
-      newUrl.searchParams.set("uid", currUid);
-      !borked && json.length && newUrl.searchParams.set("id", json.map((n) => n.toString(36)).join("-"));
-      return { url: newUrl, err };
+      obj.url = new URL(windowTop.location);
+      obj.url.searchParams.set("uid", currUid);
+      !borked && json.length && obj.url.searchParams.set("id", json.map((n) => n.toString(36)).join("-"));
+      return obj;
     });
 };
 
@@ -186,7 +189,7 @@ const saveTranslations = () => {
   buildUrl().then(
     (obj) => {
       if (obj.err) {
-        showError(obj.err);
+        showError(obj);
       } else {
         windowTop.location = obj.url;
       }
@@ -199,14 +202,18 @@ const saveTranslations = () => {
   );
 };
 
-const showError = (err) => {
-  let errorHTML = document.getElementById(err.message).innerHTML;
-  if (err === titleError) {
-    errorHTML = errorHTML.replace(/\{title\}/, escapeHTML(document.getElementById("stop").textContent));
-  } else if (err === frozenUidError) {
+const showError = (obj) => {
+  let errorHTML = document.getElementById(obj.err.message).innerHTML;
+  if (obj.err === frozenUidError) {
     errorHTML = errorHTML.replace(/\{langname\}/, escapeHTML(currLangvar.name_expr_txt));
   }
   windowTop.document.getElementById("error").innerHTML = errorHTML;
+  if (obj.highlight) {
+    const node = document.getElementById(obj.highlight);
+    node.classList.remove("highlight-dark");
+    node.classList.add("highlight-red");
+    node.addEventListener("focus", (e) => (node.classList.remove("highlight-red")), { once: true });
+  }
   toTarget("error-popup");
 };
 
