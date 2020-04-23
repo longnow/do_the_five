@@ -554,7 +554,7 @@
     padding-inline-end: unset;
   }
 
-  #do_the_five .highlight-dark {
+  #do_the_five .highlight-dark, #do_the_five .highlight-red {
     background-color: unset;
   }
 
