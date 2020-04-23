@@ -212,9 +212,11 @@
       <div id="share-popup" class="overlay noprint">
         <a class="cancel" onclick="toTarget()"></a>
         <div class="popup">
-          <a class="button close" onclick="toTarget()">
-            <i class="fas fa-window-close"></i>
-          </a>
+          <div class="popup-controls">
+            <a class="button close" onclick="toTarget()">
+              <i class="fas fa-window-close"></i>
+            </a>
+          </div>
           <div class="share-buttons">
             <a class="button share app facebook" id="facebook">
               <i class="fab fa-facebook"></i>
@@ -259,18 +261,20 @@
       </div>
 
       <div id="qrcode-popup" class="overlay noprint">
-        <a class="cancel" onclick="toTarget('weixin')"></a>
+        <a class="cancel" onclick="toTarget()"></a>
         <div id="qrcode" class="popup"></div>
       </div>
 
       <div id="error-popup" class="overlay noprint">
         <a class="cancel" onclick="toTarget()"></a>
         <div class="popup">
-          <a class="button close" onclick="toTarget()">
-            <i class="fas fa-window-close"></i>
-          </a>
-          <div id="error" class="error">
+          <div class="popup-controls">
+            <a class="button close" onclick="toTarget()">
+              <i class="fas fa-window-close"></i>
+            </a>
             <i class="fas fa-exclamation-triangle alert-icon"></i>
+          </div>
+          <div id="error" class="error">
             <div></div>
           </div>
         </div>

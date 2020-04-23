@@ -72,10 +72,12 @@ const prepTrans = (trans, plToUpper) =>
 
 const applyTranslations = (transMap) => {
   transNodes.forEach((node) => {
-      node.innerHTML = prepTrans(transMap[node.id], node.id === "stop");
-      if (node.querySelector(".panlexese")) {
-        panlexeseMap[node.id] = node.textContent;
-      }
+    node.innerHTML = prepTrans(transMap[node.id], node.id === "stop");
+    if (node.querySelector(".panlexese")) {
+      panlexeseMap[node.id] = node.textContent;
+      node.classList.add("highlight");
+      node.addEventListener("input", (e) => (node.classList.remove("highlight")), { once: true });
+    }
   });
   document.title = document.getElementById("stop").textContent;
 };
@@ -133,7 +135,6 @@ const buildUrl = () => {
   }
 
   let err = null;
-
   const trans = Array.from(transNodes).reduce(
     (acc, node) => ({ ...acc, [node.id]: node.textContent }),
     {}
@@ -207,7 +208,7 @@ const showError = (err) => {
   } else if (err === frozenUidError) {
     errorMsg.innerHTML = errorMsg.innerHTML.replace(/\{langname\}/, escapeHTML(currLangvar.name_expr_txt));
   }
-  errorDiv.replaceChild(errorMsg, errorDiv.lastElementChild);
+  errorDiv.replaceChild(errorMsg, errorDiv.firstElementChild);
   toTarget("error-popup");
 };
 
@@ -355,7 +356,8 @@ fetch(`${backend}/langvar/${currUid}`)
   .then((r) => r.json())
   .then((obj) => {
     currLangvar = obj;
-    document.children[0].setAttribute("dir", currLangvar.dir);
+    document.documentElement.setAttribute("lang", `und-${currLangvar.script_expr_txt}`);
+    document.documentElement.setAttribute("dir", currLangvar.dir);
     const langPicker = document.getElementById("lang-picker");
     langPicker.value = currLangvar.name_expr_txt;
     langPicker.addEventListener("language-select", changeLang);
