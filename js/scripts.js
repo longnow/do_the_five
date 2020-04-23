@@ -6,11 +6,6 @@ const transNodes = [...document.querySelectorAll("[contenteditable='true']")];
 const initialSearchParams = new URLSearchParams(windowTop.location.search);
 const official = initialSearchParams.get("official") !== null;
 
-if (borked && !official) {
-  transNodes.forEach((node) => (node.contentEditable = false));
-  document.getElementById("email-form").style.display = "none";
-}
-
 const defaultUid = "eng-000";
 const fallbackUid = "eng-000";
 const currUid = initialSearchParams.get("uid") || defaultUid;
@@ -314,11 +309,11 @@ const resize = () => {
 };
 
 const init = () => {
-  if (!official) {
-    [...document.getElementsByClassName("official-only")].forEach(
-      (node) => (node.style.display = "none")
-    );
-  }
+  window.addEventListener("keydown", closeOnEsc);
+  windowTop.addEventListener("resize", resize);
+  resize();
+  populateTooltips();
+
   [...document.getElementsByClassName("app")].forEach((node) => {
     const url = new URL(windowTop.location);
     url.searchParams.delete("official");
@@ -336,13 +331,43 @@ const init = () => {
       navigator.share({ url: windowTop.location.href })
     );
   }
-  populateTooltips();
-  window.addEventListener("keydown", closeOnEsc);
+
+  if (!official) {
+    [...document.getElementsByClassName("official-only")].forEach(
+      (node) => (node.style.display = "none")
+    );
+    if (borked) {
+      transNodes.forEach((node) => (node.contentEditable = false));
+      document.getElementById("email-form").style.display = "none";
+    }
+  }
+  if (!borked || official) {
+    transNodes.forEach((node) => {
+      node.addEventListener("paste", (e) => {
+        if (e.clipboardData.types.every((type) => type === "text/plain")) return;
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+        const paste = e.clipboardData.getData("text");
+        selection.deleteFromDocument();
+        selection.getRangeAt(0).insertNode(document.createTextNode(paste));
+        if (node.querySelector(".panlexese")) {
+          node.textContent = node.textContent; // reset to plain
+          const newRange = document.createRange();
+          newRange.selectNodeContents(node);
+          newRange.collapse();
+          selection.removeAllRanges();
+          selection.addRange(newRange);
+        } else {
+          selection.collapseToEnd();
+        }
+        e.preventDefault();
+      });
+    });
+  }
+
   if (window !== windowTop) {
     initFromFrame();
   }
-  windowTop.addEventListener("resize", resize);
-  resize();
 };
 
 const initFromFrame = () => {
