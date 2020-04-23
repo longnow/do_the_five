@@ -95,6 +95,7 @@ class PanLexLanguagePicker extends HTMLInputElement {
       txt: txt,
       pref_trans_langvar: 187,
       include: this.include,
+      limit: 100
     }).then((response) => {
       if (response.suggest) {
         this.lngList.innerHTML = "";
