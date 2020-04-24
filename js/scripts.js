@@ -344,23 +344,31 @@ const init = () => {
   if (!borked || official) {
     transNodes.forEach((node) => {
       node.addEventListener("paste", (e) => {
-        if (e.clipboardData.types.every((type) => type === "text/plain")) return;
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
-        const paste = e.clipboardData.getData("text");
-        selection.deleteFromDocument();
-        selection.getRangeAt(0).insertNode(document.createTextNode(paste));
-        if (node.querySelector(".panlexese")) {
+        window.setTimeout(() => { // after paste is done
+          const sel = window.getSelection();
+          if (!sel.isCollapsed) sel.collapseToEnd();
+
+          let elt = sel.focusNode;
+          let offset = elt.nodeType === 1 && !elt.textContent.length
+            ? 0 // odd firefox case with trailing newline
+            : sel.focusOffset;
+          while (elt.contentEditable !== "true") {
+            let prevElt = elt.previousSibling;
+            while (prevElt) {
+              offset += prevElt.textContent.length;
+              prevElt = prevElt.previousSibling;
+            }
+            elt = elt.parentNode;
+          }
+
           node.textContent = node.textContent; // reset to plain
-          const newRange = document.createRange();
-          newRange.selectNodeContents(node);
-          newRange.collapse();
-          selection.removeAllRanges();
-          selection.addRange(newRange);
-        } else {
-          selection.collapseToEnd();
-        }
-        e.preventDefault();
+          if (offset > node.textContent.length) offset = node.textContent.length;
+          const range = document.createRange();
+          range.setStart(node.firstChild, offset);
+          range.setEnd(node.firstChild, offset);
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }, 0);
       });
     });
   }
