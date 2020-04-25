@@ -559,7 +559,7 @@
     margin-inline-end: 10mm;
   }
 
-  #do_the_five .fullsize #poster {
+  #do_the_five.fullsize #poster {
     block-size: 276mm;
   }
 

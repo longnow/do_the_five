@@ -288,7 +288,6 @@ const qrcode = new QRCode(document.getElementById("qrcode"), {
 
 const buildAndShareUrl = (e) => {
   const builder = e.currentTarget.id;
-  console.log("here we are");
   buildUrlPermissive().then((url) => {
     makeUrlShareable(url);
     shareUrl(url, builder);
@@ -368,7 +367,7 @@ const init = () => {
     );
   }
   if (initialSearchParams.has("print")) {
-    document.body.classList.add("fullsize");
+    document.documentElement.classList.add("fullsize");
   }
 
   if (!official) {
