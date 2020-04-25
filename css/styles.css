@@ -489,7 +489,7 @@
   margin-inline-end: 4mm;
 }
 
-#do_the_five .close, #do_the_five .overlay .close {
+#do_the_five .close {
   color: black;
   font-size: 18pt;
 }
