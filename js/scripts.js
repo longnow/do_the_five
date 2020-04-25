@@ -367,6 +367,9 @@ const init = () => {
       navigator.share({ url: windowTop.location.href })
     );
   }
+  if (initialSearchParams.has("print")) {
+    document.body.classList.add("fullsize");
+  }
 
   if (!official) {
     [...document.getElementsByClassName("official-only")].forEach(

@@ -546,13 +546,21 @@
     height: unset !important;
   }
 
+  #do_the_five #container {
+    transform: unset !important;
+  }
+
   #do_the_five #poster {
+    inline-size: 189mm;
+    block-size: 266mm;
     margin-block-start: 10mm;
     margin-block-end: 0;
     margin-inline-start: 10mm;
     margin-inline-end: 10mm;
-    inline-size: 189mm;
-    block-size: 266mm;
+  }
+
+  #do_the_five .fullsize #poster {
+    block-size: 276mm;
   }
 
   #do_the_five #poster-background {
