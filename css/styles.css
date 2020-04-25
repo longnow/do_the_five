@@ -1,5 +1,5 @@
-#do_the_five {
-  font-family: sans-serif;
+#do_the_five, #do_the_five input {
+  font-family: sans-serif, "Noto Sans";
   line-height: initial;
 }
 
