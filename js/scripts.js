@@ -1,4 +1,5 @@
 const backend = "https://apps.panlex.org/do_the_five-server";
+const pdfUrlBase = "https://panlex.org/do_the_five-pdf/";
 const borked = true;
 
 const windowTop = window.top;
@@ -42,6 +43,21 @@ const closeOnEsc = (e) => {
   if (e.keyCode === 27 && lastTarget) {
     toTarget();
   }
+};
+
+const showError = (obj) => {
+  let errorHTML = document.getElementById(obj.err.message).innerHTML;
+  if (obj.err === frozenUidError) {
+    errorHTML = errorHTML.replace(/\{langname\}/, escapeHTML(currLangvar.name_expr_txt));
+  }
+  windowTop.document.getElementById("error").innerHTML = errorHTML;
+  if (obj.highlight) {
+    const node = document.getElementById(obj.highlight);
+    node.classList.remove("highlight-dark");
+    node.classList.add("highlight-red");
+    node.addEventListener("focus", (e) => (node.classList.remove("highlight-red")), { once: true });
+  }
+  toTarget("error-popup");
 };
 
 const escapeHTML = (str) => str.replace(/[&<>]/g,
@@ -190,6 +206,28 @@ const buildUrl = () => {
     });
 };
 
+const buildUrlPermissive = () => {
+  return new Promise((resolve, reject) => {
+    buildUrl().then(
+      (obj) => {
+        resolve(obj.url)
+      },
+      () => {
+        const url = new URL(windowTop.location);
+        if (!url.searchParams.has("uid")) {
+          url.searchParams.set("uid", currUid);
+        }
+        resolve(url);
+      }
+    );
+  });
+};
+
+const makeUrlShareable = (url) => {
+  url.searchParams.delete("official");
+  url.searchParams.delete("edit");
+};
+
 const saveTranslations = () => {
   buildUrl().then(
     (obj) => {
@@ -207,22 +245,7 @@ const saveTranslations = () => {
   );
 };
 
-const showError = (obj) => {
-  let errorHTML = document.getElementById(obj.err.message).innerHTML;
-  if (obj.err === frozenUidError) {
-    errorHTML = errorHTML.replace(/\{langname\}/, escapeHTML(currLangvar.name_expr_txt));
-  }
-  windowTop.document.getElementById("error").innerHTML = errorHTML;
-  if (obj.highlight) {
-    const node = document.getElementById(obj.highlight);
-    node.classList.remove("highlight-dark");
-    node.classList.add("highlight-red");
-    node.addEventListener("focus", (e) => (node.classList.remove("highlight-red")), { once: true });
-  }
-  toTarget("error-popup");
-};
-
-const shareURLBuilders = {
+const shareUrlBuilders = {
   facebook: (title, url) =>
     `https://facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
   twitter: (title, url) =>
@@ -263,29 +286,24 @@ const qrcode = new QRCode(document.getElementById("qrcode"), {
   height: 500,
 });
 
-const buildAndShareURL = (e) => {
+const buildAndShareUrl = (e) => {
   const builder = e.currentTarget.id;
-  buildUrl().then(
-    (obj) => {
-      shareUrl(obj.url, builder)
-    },
-    () => {
-      shareUrl(new URL(windowTop.location), builder);
-    }
-  );
+  console.log("here we are");
+  buildUrlPermissive().then((url) => {
+    makeUrlShareable(url);
+    shareUrl(url, builder);
+  });
   e.preventDefault();
 };
 
 const shareUrl = (url, builder) => {
-  url.searchParams.delete("official");
-  url.searchParams.delete("edit");
   if (builder === "weixin") {
     qrcode.makeCode(url.toString());
     toTarget("qrcode-popup");
   } else {
     toTarget();
     window.open(
-      shareURLBuilders[builder](
+      shareUrlBuilders[builder](
         document.getElementById("stop").textContent,
         url
       ),
@@ -293,6 +311,15 @@ const shareUrl = (url, builder) => {
       "noopener"
     );
   }
+};
+
+const openPdf = (url) => {
+  buildUrlPermissive().then((url) => {
+    makeUrlShareable(url);
+    const pdfUrl = new URL(pdfUrlBase);
+    pdfUrl.search = url.search;
+    window.open(pdfUrl, "_blank", "noopener");
+  });
 };
 
 let frame;
@@ -324,15 +351,14 @@ const init = () => {
   resize();
   populateTooltips();
 
-  [...document.getElementsByClassName("app")].forEach((node) => {
+  [...windowTop.document.getElementsByClassName("app")].forEach((node) => {
     const url = new URL(windowTop.location);
-    url.searchParams.delete("official");
-    url.searchParams.delete("edit");
-    node.href = shareURLBuilders[node.id](
+    makeUrlShareable(url);
+    node.href = shareUrlBuilders[node.id](
       document.getElementById("stop").textContent,
       url
     );
-    node.addEventListener("click", buildAndShareURL);
+    node.addEventListener("click", buildAndShareUrl);
   });
   if (navigator.maxTouchPoints && navigator.share) {
     const shareButton = document.getElementById("share-button");

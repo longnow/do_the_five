@@ -1,5 +1,6 @@
 #do_the_five {
   font-family: sans-serif;
+  line-height: initial;
 }
 
 #do_the_five body {
@@ -232,11 +233,6 @@
   cursor: pointer;
 }
 
-#do_the_five #share {
-  font-weight: normal;
-  font-size: 18pt;
-}
-
 #do_the_five .icon {
   block-size: 24mm;
   margin-inline-end: 10mm;
@@ -314,7 +310,7 @@
   display: flex;
 }
 
-#do_the_five .button {
+#do_the_five .dt5-button {
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -355,6 +351,7 @@
 }
 
 #do_the_five .facebook:hover {
+  color: white !important;
   background-color: #2d4373;
 }
 
@@ -363,6 +360,7 @@
 }
 
 #do_the_five .twitter:hover {
+  color: white !important;
   background-color: #2795e9;
 }
 
@@ -371,6 +369,7 @@
 }
 
 #do_the_five .plain:hover {
+  color: white !important;
   background-color: #5e5e5e;
 }
 
@@ -379,6 +378,7 @@
 }
 
 #do_the_five #linkedin:hover {
+  color: white !important;
   background-color: #005a8a;
 }
 
@@ -387,6 +387,7 @@
 }
 
 #do_the_five #whatsapp:hover {
+  color: white !important;
   background-color: #1da851;
 }
 
@@ -395,6 +396,7 @@
 }
 
 #do_the_five #vk:hover {
+  color: white !important;
   background-color: #43648c;
 }
 
@@ -403,6 +405,7 @@
 }
 
 #do_the_five #telegram:hover {
+  color: white !important;
   background-color: #4b97d1;
 }
 
@@ -411,6 +414,7 @@
 }
 
 #do_the_five #weibo:hover {
+  color: white !important;
   background-color: #cf1429;
 }
 
@@ -419,6 +423,7 @@
 }
 
 #do_the_five #weixin:hover {
+  color: white !important;
   background-color: #28ad00;
 }
 
@@ -427,6 +432,7 @@
 }
 
 #do_the_five #qq:hover {
+  color: white !important;
   background-color: #000000;
 }
 
@@ -483,12 +489,13 @@
   margin-inline-end: 4mm;
 }
 
-#do_the_five .close {
+#do_the_five .close, #do_the_five .overlay .close {
+  color: black;
   font-size: 18pt;
 }
 
 #do_the_five .close:hover {
-  color: #666;
+  color: #666 !important;
 }
 
 #do_the_five .alert-icon {

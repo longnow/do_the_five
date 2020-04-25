@@ -5,20 +5,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>STOP CORONAVIRUS</title>
-    <meta name="description" content="Covid19 Multilingual Poster-Maker" />
+    <meta name="description" content="COVID-19 Multilingual Poster-Maker" />
     <meta name="author" content="Translation Commons and PanLex" />
     <link href="images/favicon.png" rel="icon" type="image/x-icon" />
     <link href="css/styles.css?v=6" rel="stylesheet"  />
-    <link href="css/fontawesome.min.css" rel="stylesheet" />
     <link href="css/brands.min.css" rel="stylesheet" />
     <link href="css/solid.min.css" rel="stylesheet" />
+    <link href="css/fontawesome.min.css" rel="stylesheet" />
   </head>
 
   <body>
     <div id="container">
       <div id="poster">
         <div class="logos" id="top-logos">
-          <img id="covid-logo" src="images/covid-logo.svg" alt="Covid-19 Multilingual" />
+          <img id="covid-logo" src="images/covid-logo.svg" alt="COVID-19 Multilingual" />
         </div>
         <div id="poster-background">
           <div id="poster-content">
@@ -178,20 +178,22 @@
         <div>
           <a
             id="share-button"
-            class="button share plain"
+            class="dt5-button share plain"
             title="share"
             onclick="toTarget('share-popup')"
           >
             <i class="fas fa-share-square"></i>
           </a>
-
-          <a class="button share plain" title="print" onclick="window.print()">
+          <a class="dt5-button share plain" title="print" onclick="window.print()">
             <i class="fas fa-print"></i>
+          </a>
+          <a class="dt5-button share plain" title="download pdf" onclick="openPdf()">
+            <i class="fas fa-download"></i>
           </a>
         </div>
         <div>
           <a
-            class="button share facebook"
+            class="dt5-button share facebook"
             href="https://www.facebook.com/COVID19Multilingual/"
             target="_blank"
             rel="noopener"
@@ -199,7 +201,7 @@
             <i class="fab fa-facebook"></i>
           </a>
           <a
-            class="button share twitter"
+            class="dt5-button share twitter"
             href="https://twitter.com/COVID19Multling"
             target="_blank"
             rel="noopener"
@@ -213,47 +215,47 @@
         <a class="cancel" onclick="toTarget()"></a>
         <div class="popup">
           <div class="popup-controls">
-            <a class="button close" onclick="toTarget()">
+            <a class="dt5-button close" onclick="toTarget()">
               <i class="fas fa-window-close"></i>
             </a>
           </div>
           <div class="share-buttons">
-            <a class="button share app facebook" id="facebook">
+            <a class="dt5-button share app facebook" id="facebook">
               <i class="fab fa-facebook"></i>
             </a>
-            <a class="button share app twitter" id="twitter">
+            <a class="dt5-button share app twitter" id="twitter">
               <i class="fab fa-twitter"></i>
             </a>
 
-            <a class="button share plain app" id="linkedin">
+            <a class="dt5-button share plain app" id="linkedin">
               <i class="fab fa-linkedin"></i>
             </a>
 
-            <a class="button share app" id="whatsapp">
+            <a class="dt5-button share app" id="whatsapp">
               <i class="fab fa-whatsapp"></i>
             </a>
 
-            <a class="button share app" id="vk">
+            <a class="dt5-button share app" id="vk">
               <i class="fab fa-vk"></i>
             </a>
 
-            <a class="button share app" id="telegram">
+            <a class="dt5-button share app" id="telegram">
               <i class="fab fa-telegram"></i>
             </a>
 
-            <a class="button share app" id="weibo">
+            <a class="dt5-button share app" id="weibo">
               <i class="fab fa-weibo"></i>
             </a>
 
-            <a class="button share app" id="weixin">
+            <a class="dt5-button share app" id="weixin">
               <i class="fab fa-weixin"></i>
             </a>
 
-            <a class="button share app" id="qq">
+            <a class="dt5-button share app" id="qq">
               <i class="fab fa-qq"></i>
             </a>
 
-            <a class="button share plain app" id="email">
+            <a class="dt5-button share plain app" id="email">
               <i class="fas fa-envelope"></i>
             </a>
           </div>
@@ -269,7 +271,7 @@
         <a class="cancel" onclick="toTarget()"></a>
         <div class="popup">
           <div class="popup-controls">
-            <a class="button close" onclick="toTarget()">
+            <a class="dt5-button close" onclick="toTarget()">
               <i class="fas fa-window-close"></i>
             </a>
             <i class="fas fa-exclamation-triangle alert-icon"></i>
