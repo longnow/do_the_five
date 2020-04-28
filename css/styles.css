@@ -559,11 +559,15 @@
     margin-inline-end: 10mm;
   }
 
+  #do_the_five.png #poster {
+    margin-block-end: 10mm;
+  }
+
   #do_the_five.fullsize #poster {
     block-size: 276mm;
   }
 
-  #do_the_five #poster-background {
+  #do_the_five:not(.png) #poster-background {
     color: black;
   }
 

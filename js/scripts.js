@@ -1,5 +1,5 @@
 const backend = "https://apps.panlex.org/do_the_five-server";
-const pdfUrlBase = "https://panlex.org/do_the_five-pdf/";
+const downloadUrlBase = "https://panlex.org/do_the_five-download/";
 const borked = true;
 
 const windowTop = window.top;
@@ -312,12 +312,13 @@ const shareUrl = (url, builder) => {
   }
 };
 
-const openPdf = (url) => {
+const downloadFile = (type) => {
   buildUrlPermissive().then((url) => {
     makeUrlShareable(url);
-    const pdfUrl = new URL(pdfUrlBase);
-    pdfUrl.search = url.search;
-    window.open(pdfUrl, "_blank", "noopener");
+    const downloadUrl = new URL(downloadUrlBase);
+    downloadUrl.search = url.search;
+    downloadUrl.searchParams.set("type", type);
+    window.open(downloadUrl, "_blank", "noopener");
   });
 };
 
@@ -368,6 +369,9 @@ const init = () => {
   }
   if (initialSearchParams.has("print")) {
     document.documentElement.classList.add("fullsize");
+  }
+  if (initialSearchParams.has("png")) {
+    document.documentElement.classList.add("png");
   }
 
   if (!official) {
