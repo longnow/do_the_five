@@ -468,6 +468,6 @@ fetch(`${backend}/langvar/${currUid}`)
       const url = new URL(windowTop.location);
       url.searchParams.delete("success");
       windowTop.history.replaceState(null, "", url);
-      showAlert("success-alert");
+      setTimeout(() => showAlert("success-alert"), 200);
     }
   });
