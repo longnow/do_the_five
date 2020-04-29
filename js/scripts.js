@@ -60,6 +60,12 @@ const showError = (obj) => {
   toTarget("error-popup");
 };
 
+const showAlert = (id) => {
+  let alertHTML = document.getElementById(id).innerHTML;
+  windowTop.document.getElementById("alert").innerHTML = alertHTML;
+  toTarget("alert-popup");
+};
+
 const escapeHTML = (str) => str.replace(/[&<>]/g,
   tag => ({
       '&': '&amp;',
@@ -234,6 +240,7 @@ const saveTranslations = () => {
       if (obj.err) {
         showError(obj);
       } else {
+        obj.url.searchParams.set("success", 1);
         windowTop.location = obj.url;
       }
     },
@@ -457,4 +464,10 @@ fetch(`${backend}/langvar/${currUid}`)
   .finally(() => {
     init();
     document.body.style.visibility = "visible";
+    if (initialSearchParams.has("success")) {
+      const url = new URL(windowTop.location);
+      url.searchParams.delete("success");
+      windowTop.history.replaceState(null, "", url);
+      showAlert("success-alert");
+    }
   });

@@ -271,7 +271,7 @@
         <div id="qrcode" class="popup"></div>
       </div>
 
-      <div id="error-popup" class="overlay noprint">
+      <div id="error-popup" class="overlay noprint message-popup">
         <a class="cancel" onclick="toTarget()"></a>
         <div class="popup">
           <div class="popup-controls">
@@ -280,28 +280,44 @@
             </a>
             <i class="fas fa-exclamation-triangle alert-icon"></i>
           </div>
-          <div id="error" class="error">
+          <div id="error" class="popup-content">
+          </div>
+        </div>
+      </div>
+      <div id="alert-popup" class="overlay noprint message-popup">
+        <a class="cancel" onclick="toTarget()"></a>
+        <div class="popup">
+          <div class="popup-controls">
+            <a class="dt5-button close" onclick="toTarget()">
+              <i class="fas fa-window-close"></i>
+            </a>
+            <i class="fas fa-thumbs-up alert-icon"></i>
+          </div>
+          <div id="alert" class="popup-content">
           </div>
         </div>
       </div>
 
-      <div class="error-message" id="frozen-uid-error" dir="ltr">
+      <div class="message-content" id="frozen-uid-error" dir="ltr">
         The language “{langname}” cannot be modified.
         If you have corrections, please contact us at the email below.
         If you did not mean to choose it, please choose the correct language.
       </div>
-      <div class="error-message" id="pw-empty-error" dir="ltr">
+      <div class="message-content" id="pw-empty-error" dir="ltr">
         Please enter the password.
       </div>
-      <div class="error-message" id="panlexese-error" dir="ltr">
+      <div class="message-content" id="panlexese-error" dir="ltr">
         Please enter full phrase translations if possible (and don't use “—”):
         <br><br>
         Don't touch your face<i class="fas fa-check mark good"></i>
         <br><br>
         no — touch — face<i class="fas fa-times mark bad"></i>
       </div>
-      <div class="error-message" id="title-error" dir="ltr">
+      <div class="message-content" id="title-error" dir="ltr">
         Please translate the poster title at the top (highlighted in red).
+      </div>
+      <div class="message-content" id="success-alert" dir="ltr">
+        Your poster has been saved. Thanks for your contribution!
       </div>
 
       <script>
