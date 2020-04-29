@@ -388,12 +388,11 @@ const init = () => {
     [...document.getElementsByClassName("official-only")].forEach(
       (node) => (node.style.display = "none")
     );
-    if (borked) {
-      transNodes.forEach((node) => (node.contentEditable = false));
-      document.getElementById("email-form").style.display = "none";
-    }
   }
-  if (!borked || official) {
+  if (borked && !official) {
+    transNodes.forEach((node) => (node.contentEditable = false));
+    document.getElementById("email-form").style.display = "none";
+  } else {
     transNodes.forEach((node) => {
       node.addEventListener("paste", (e) => {
         window.setTimeout(() => { // after paste is done
@@ -413,7 +412,7 @@ const init = () => {
             elt = elt.parentNode;
           }
 
-          node.textContent = node.textContent; // reset to plain
+          node.textContent = node.textContent.replace(/\u00A0/g, " "); // reset to plain
           if (offset > node.textContent.length) offset = node.textContent.length;
           const range = document.createRange();
           range.setStart(node.firstChild, offset);
