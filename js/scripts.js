@@ -439,6 +439,10 @@ const initFromFrame = () => {
     div.appendChild(popup);
   });
   windowTop.document.body.appendChild(div);
+  const viewport = windowTop.document.querySelector("meta[name='viewport']");
+  if (viewport && viewport.getAttribute("content").match(/maximum-scale/)) {
+    viewport.replaceWith(document.querySelector("meta[name='viewport']").cloneNode());
+  }
 };
 
 fetch(`${backend}/langvar/${currUid}`)
