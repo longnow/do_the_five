@@ -61,8 +61,7 @@ const showError = (obj) => {
 };
 
 const showAlert = (id) => {
-  let alertHTML = document.getElementById(id).innerHTML;
-  windowTop.document.getElementById("alert").innerHTML = alertHTML;
+  windowTop.document.getElementById("alert").innerHTML = document.getElementById(id).innerHTML;
   toTarget("alert-popup");
 };
 

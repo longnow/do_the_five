@@ -524,18 +524,6 @@
   color: red;
 }
 
-#do_the_five .message-content {
-  display: none;
-}
-
-/*.page-id-4448 iframe {
-  width: 100vw;
-  height: 1300px;
-  border: none;
-  margin: 0;
-  position: relative;
-}*/
-
 @media print {
   @page {
     size: A4;
