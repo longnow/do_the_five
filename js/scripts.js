@@ -324,9 +324,6 @@ const downloadFile = (type) => {
     const downloadUrl = new URL(downloadUrlBase);
     downloadUrl.search = url.search;
     downloadUrl.searchParams.set("type", type);
-    if (currLangvar.mod_time) {
-      downloadUrl.searchParams.set("mod_time", new Date(currLangvar.mod_time).getTime());
-    }
     window.open(downloadUrl, "_blank", "noopener");
   });
 };
