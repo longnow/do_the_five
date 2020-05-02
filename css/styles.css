@@ -148,6 +148,7 @@
   font-weight: normal;
   max-block-size: 150mm;
   overflow: auto;
+  cursor: pointer;
   /* min-inline-size: 50mm; */
 }
 

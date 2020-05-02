@@ -31,7 +31,7 @@
                 <label id="language" contenteditable="true" spellcheck="false">
                   Language
                 </label>
-                <input type="text" is="panlex-language-picker" id="lang-picker" autocomplete="off" />
+                <input type="text" id="lang-picker" autocomplete="off" is="panlex-language-picker" limit="100" show-not-found />
                 <i id="search-icon" class="fas fa-search"></i>
               </form>
             </div>
@@ -296,6 +296,10 @@
         </div>
       </div>
 
+      <template id="panlex-language-picker-not-found">
+        <div><span>no languages found</span><span></span></div>
+        <div>&nbsp;</div>
+      </template>
       <template id="frozen-uid-error">
         The language “{langname}” cannot be modified.
         If you have corrections, please contact us at the email below.
