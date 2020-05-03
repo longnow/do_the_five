@@ -17,14 +17,12 @@ const validIncludes = new Set([
 ]);
 
 function query(ep, params, get = false) {
-  const url = new URL(URLBASE + ep);
-  const headers = new Headers({
-    "x-app-name": `panlex-language-picker/2.3.0`,
-    "content-type": "application/json",
-  });
-  return fetch(url, {
+  return fetch(URLBASE + ep, {
     method: "POST",
-    headers,
+    headers: {
+      "x-app-name": "panlex-language-picker/2.3.0",
+      "content-type": "application/json"
+    },
     body: JSON.stringify(params),
   }).then((response) => response.json());
 }
@@ -80,6 +78,8 @@ class PanLexLanguagePicker extends HTMLInputElement {
         .split(" ")
         .filter((inc) => validIncludes.has(inc));
     }
+    this.limit = this.getAttribute("limit");
+    this.listItemClass = this.getAttribute("list-item-class") || "";
     this.debouncedGetSuggestions = debounce.call(this, this.getSuggestions, 500);
     this.addEventListener("input", (e) => this.debouncedGetSuggestions(e.target.value));
     document.addEventListener("click", () => this.closeIfOpen());
@@ -102,17 +102,14 @@ class PanLexLanguagePicker extends HTMLInputElement {
       pref_trans_langvar: 187,
       include: this.include
     };
-    if (this.hasAttribute("limit")) {
-      queryObj.limit = this.getAttribute("limit");
-    }
+    this.limit && (queryObj.limit = this.limit);
     query("/suggest/langvar", queryObj).then((response) => {
       if (response.suggest) {
-        const className = this.getAttribute("list-item-class") || "";
         this.lngList.innerHTML = "";
         if (response.suggest.length) {
           response.suggest.forEach((s) => {
             const li = document.createElement("li");
-            li.className = className;
+            li.className = this.listItemClass;
             Object.keys(s).forEach(
               (k) => k !== "trans" && (li.dataset[k] = s[k])
             );
@@ -141,7 +138,7 @@ class PanLexLanguagePicker extends HTMLInputElement {
         } else if (this.hasAttribute("show-not-found")) {
           this.lngList.innerHTML = "";
           const li = document.createElement("li");
-          li.className = className;
+          li.className = this.listItemClass;
           li.addEventListener("click", () => this.closeIfOpen());
           const template = document.getElementById("panlex-language-picker-not-found");
           li.innerHTML = template ? template.innerHTML : "not found";
@@ -173,5 +170,5 @@ class PanLexLanguagePicker extends HTMLInputElement {
 }
 
 window.customElements.define("panlex-language-picker", PanLexLanguagePicker, {
-  extends: "input",
+  extends: "input"
 });
