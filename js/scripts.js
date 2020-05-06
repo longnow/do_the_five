@@ -192,11 +192,11 @@ const buildUrl = () => {
         .getElementById("official-pw")
         .value.trim()
         .toLowerCase();
-      if (password.length === 0) {
+      if (password.length) {
+        params.append("official", password);
+      } else if (!obj.err) {
         obj.err = passwordEmptyError;
         obj.highlight = "official-pw";
-      } else {
-        params.append("official", password);
       }
     }
   }
