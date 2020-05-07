@@ -49,6 +49,8 @@ class PanLexLanguagePicker extends HTMLInputElement {
     this.initialized = true;
     this.container = document.createElement("div");
     this.container.className = "panlex-language-picker";
+    this.lang && (this.container.lang = this.lang);
+    this.dir && (this.container.dir = this.dir);
     this.container.innerHTML = `
     <style>
       .panlex-language-picker {
