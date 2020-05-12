@@ -12,7 +12,7 @@
     <link href="css/solid.min.css" rel="stylesheet" />
     <link href="css/fontawesome.min.css" rel="stylesheet" />
     <link href="https://archive.org/download/NotoFonts/noto-sans-minimal.min.css" rel="stylesheet" />
-    <link href="css/styles.css?v=7" rel="stylesheet" />
+    <link href="css/styles.css?v=8" rel="stylesheet" />
   </head>
 
   <body>
@@ -93,18 +93,26 @@
               </div>
             </div>
             <div id="bottom-stuff">
-              <form id="email-form" class="noprint">
-                <label>Your email:</label>
-                <input type="text" id="email" dir="ltr" lang="en" />
-                <span id="email-note">optional, will not be on poster</span>
-              </form>
-              <div class="official-only noprint" id="pw-save">
-                <input type="password" id="official-pw" dir="ltr" lang="en" autocomplete="off" />
-                <i
-                  id="save-icon"
-                  class="fas fa-save"
-                  onclick="saveTranslations()"
-                ></i>
+              <div id="bottom-form" class="noprint" dir="ltr" lang="en">
+                <div class="bottom-form-item">
+                  <label>Your email:</label>
+                  <input type="text" id="email" class="bottom-input" />
+                  <span>optional, will not be on poster</span>
+                </div>
+                <div class="bottom-form-item">
+                  <label>Your name:</label>
+                  <input type="text" id="name" class="bottom-input" />
+                  <span>for contributor list</span>
+                </div>
+                <div class="bottom-form-item official-only">
+                  <label></label>
+                  <input type="password" id="official-pw" autocomplete="off" />
+                  <i
+                    id="save-icon"
+                    class="fas fa-save"
+                    onclick="saveTranslations()"
+                  ></i>
+                </div>
               </div>
               <div id="disclaimer" dir="ltr" lang="en">
                 Translation Commons and PanLex thank all contributors helping us
@@ -329,7 +337,7 @@
       </script>
       <script src="js/panlex-language-picker.js?v=3"></script>
       <script src="js/qrcode.min.js"></script>
-      <script src="js/scripts.js?v=7"></script>
+      <script src="js/scripts.js?v=8"></script>
     </div>
   </body>
 </html>

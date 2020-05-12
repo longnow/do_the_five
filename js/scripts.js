@@ -173,6 +173,7 @@ const buildUrl = () => {
     }
   }
   params.append("email", document.getElementById("email").value.trim());
+  params.append("name", document.getElementById("name").value.trim());
   if (trans.stop === panlexeseMap.stop) {
     obj.err = titleError;
     obj.highlight = "stop";
@@ -387,7 +388,7 @@ const init = () => {
   }
   if (borked && !official) {
     transNodes.forEach((node) => (node.contentEditable = false));
-    document.getElementById("email-form").style.display = "none";
+    document.getElementById("bottom-form").style.display = "none";
   } else {
     transNodes.forEach((node) => {
       node.addEventListener("paste", (e) => {

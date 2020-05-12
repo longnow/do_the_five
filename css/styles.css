@@ -212,24 +212,41 @@
   margin-block-end: 2mm;
 }
 
-#do_the_five #email-form {
+#do_the_five #bottom-form {
+  display: flex;
+  flex-direction: column;
+}
+
+#do_the_five #bottom-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#do_the_five .bottom-form-item {
   font-weight: normal;
+  font-size: 11pt;
+  margin-block-end: 1mm;
+  display: flex;
+  align-items: center;
+}
+
+#do_the_five .bottom-form-item:first-child {
   margin-block-end: 2mm;
 }
 
-#do_the_five #email-note {
-  font-size: 11pt;
+#do_the_five .bottom-form-item label {
+  inline-size: 30mm;
+  text-align: end;
 }
 
-#do_the_five #pw-save {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  margin-block-end: 1mm;
+#do_the_five .bottom-form-item input {
+  margin-inline-start: 2mm;
+  margin-inline-end: 2mm;
+  inline-size: 25mm;
 }
 
 #do_the_five #save-icon {
-  margin-inline-start: 2mm;
   font-size: 32px;
   cursor: pointer;
 }
