@@ -215,11 +215,6 @@
 #do_the_five #bottom-form {
   display: flex;
   flex-direction: column;
-}
-
-#do_the_five #bottom-form {
-  display: flex;
-  flex-direction: column;
   justify-content: center;
 }
 
@@ -235,12 +230,12 @@
   margin-block-end: 2mm;
 }
 
-#do_the_five .bottom-form-item label {
+#do_the_five .bottom-form-item > label {
   inline-size: 30mm;
   text-align: end;
 }
 
-#do_the_five .bottom-form-item input {
+#do_the_five .bottom-form-item > input {
   margin-inline-start: 2mm;
   margin-inline-end: 2mm;
   inline-size: 25mm;
