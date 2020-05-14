@@ -172,8 +172,8 @@ const buildUrl = () => {
       params.append(key, trans[key]);
     }
   }
-  params.append("email", document.getElementById("email").value.trim());
-  params.append("name", document.getElementById("name").value.trim());
+  params.append("email", document.getElementById("email-input").value.trim());
+  params.append("name", document.getElementById("name-input").value.trim());
   if (trans.stop === panlexeseMap.stop) {
     obj.err = titleError;
     obj.highlight = "stop";
