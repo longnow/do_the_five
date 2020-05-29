@@ -14,6 +14,8 @@ const browserUid = defaultUid;
 const currId = initialSearchParams.get("id") || "";
 let currLangvar = {};
 const panlexeseMap = {};
+const initialTransMap = {};
+let changedAudio = false;
 
 const borkedError = new Error("borked-error");
 const frozenUidError = new Error("frozen-uid-error");
@@ -100,12 +102,20 @@ const prepTransText = (trans, plToUpper) => {
 const applyTranslations = (transMap) => {
   transNodes.forEach((node) => {
     node.innerHTML = prepTransHTML(transMap[node.id], node.id === "stop");
-    if ((!borked || official) && Array.isArray(transMap[node.id])) {
-      panlexeseMap[node.id] = node.textContent;
-      node.classList.add("highlight-dark");
-      node.addEventListener("input", (e) => (node.classList.remove("highlight-dark")), { once: true });
-    }
   });
+  if (!borked || official) {
+    transNodes.forEach((node) => {
+      initialTransMap[node.id] = node.textContent;
+      if (Array.isArray(transMap[node.id])) {
+        panlexeseMap[node.id] = node.textContent;
+        node.classList.add("highlight-dark");
+        node.addEventListener("input", (e) => (node.classList.remove("highlight-dark")), { once: true });
+      }
+    });
+    windowTop.onbeforeunload = (e) => {
+      return unsavedChanges();
+    };
+  }
   document.title = document.getElementById("stop").textContent;
 };
 
@@ -250,6 +260,10 @@ const saveTranslations = () => {
       }
     }
   );
+};
+
+const unsavedChanges = () => {
+  return changedAudio || transNodes.some((node) => initialTransMap[node.id] !== node.textContent);
 };
 
 const shareUrlBuilders = {
