@@ -1,3 +1,5 @@
+//import { Microphone } from '../webaudio/dist/src';
+
 const backend = "https://apps.panlex.org/do_the_five-server";
 const downloadUrlBase = "https://panlex.org/do_the_five-download/";
 const borked = true;
@@ -12,7 +14,7 @@ const fallbackUid = "eng-000";
 const currUid = initialSearchParams.get("uid") || defaultUid;
 const browserUid = defaultUid;
 const currId = initialSearchParams.get("id") || "";
-let currLangvar = {};
+let currLangvar = {};;
 const panlexeseMap = {};
 const initialTransMap = {};
 let changedAudio = false;
