@@ -17,14 +17,8 @@ const currId = initialSearchParams.get("id") || "";
 let currLangvar = {};;
 const panlexeseMap = {};
 const initialTransMap = {};
-
-let mic, player;
-const recordMs = 10000;
-const currAudioBlob = {};
-let currAudioKey;
-let recording = false;
-let playing = false;
-let changedAudio = false;
+const initialAudioMap = {};
+const audio = { mic: null, player: null, recording: null, playing: null, key: null, recordMs: 10000, blob: {}, changed: false };
 
 const borkedError = new Error("borked-error");
 const frozenUidError = new Error("frozen-uid-error");
@@ -51,8 +45,13 @@ const toTarget = windowTop.toTarget = (target) => {
 };
 
 const closeOnEsc = (e) => {
-  if (e.keyCode === 27 && lastTarget) {
-    toTarget();
+  if (e.keyCode === 27) {
+    if (lastTarget) {
+      toTarget();
+    }
+    if (audio.playing) {
+      stopPlaying();
+    }
   }
 };
 
@@ -108,14 +107,18 @@ const prepTransText = (trans, plToUpper) => {
       trans;
 };
 
-const applyTranslations = (transMap, audio) => {
+const applyTranslations = (transMap, haveAudio) => {
+  haveAudio.forEach((key) => {
+    initialAudioMap[key] = true;
+  });
   transNodes.forEach((node) => {
     node.innerHTML = prepTransHTML(transMap[node.id], node.id === "stop");
-    if (audio[node.id]) {
-      const playIcon = document.createElement("i");
-      playIcon.className = "fas fa-volume-up dt5-audio dt5-play";
-      playIcon.addEventListener("click", playTranslation(node.id));
-      node.nextElementSibling.appendChild(playIcon);
+    if (node.id !== "language") {
+      const playButton = node.parentNode.querySelector(".dt5-play");
+      playButton.addEventListener("click", playTranslation(node.id));
+      if (initialAudioMap[node.id]) {
+        playButton.style.display = "unset";
+      }
     }
   });
   if (!borked || official) {
@@ -128,9 +131,9 @@ const applyTranslations = (transMap, audio) => {
       }
       if (node.id !== "language") {
         const recordIcon = document.createElement("i");
-        recordIcon.className = "fas fa-microphone dt5-audio dt5-record";
+        recordIcon.className = "fas fa-microphone";
         recordIcon.addEventListener("click", showRecordPopup(node.id));
-        node.nextElementSibling.appendChild(recordIcon);
+        node.parentNode.querySelector(".audio-buttons").appendChild(recordIcon);
       }
     });
     windowTop.onbeforeunload = (e) => {
@@ -155,10 +158,10 @@ const populateTranslations = () => {
   return fetch(url)
     .then((r) => r.json())
     .then((json) => {
-      const audio = { "stop": true, "wash": true, "cough": false, "face": false, "distance": false, "home": true };
-      //const audio = json.audio;
+      const haveAudio = ["stop","wash","home"];
+      //const haveAudio = json.audio;
       //delete json.audio;
-      applyTranslations(json, audio);
+      applyTranslations(json, haveAudio);
     });
 };
 
@@ -289,7 +292,7 @@ const saveTranslations = () => {
 };
 
 const unsavedChanges = () => {
-  return changedAudio || transNodes.some((node) => initialTransMap[node.id] !== node.textContent);
+  return audio.changed || transNodes.some((node) => initialTransMap[node.id] !== node.textContent);
 };
 
 const shareUrlBuilders = {
@@ -389,89 +392,119 @@ const resize = () => {
 };
 
 const playTranslation = (key) => {
-  return () => {
-
+  return (e) => {
+    let shouldPlay = true;
+    if (audio.playing) {
+      if (audio.playing.key === key) {
+        shouldPlay = false;
+      }
+      stopPlaying();
+    }
+    if (shouldPlay) {
+      initPlayer();
+      audio.player.load(`${backend}/audio/example.mp3`).then(() => {
+        startPlaying(key, e.target, "fa-volume-up", "fa-stop-circle");
+      });
+    }
   };
 }
 
+const startPlaying = (key, node, stoppedClass, playingClass) => {
+  node.classList.remove(stoppedClass);
+  node.classList.add(playingClass);
+  audio.playing = { key, node, stoppedClass, playingClass };
+  audio.player.play();
+  audio.player.observeProgress().subscribe((ms) => {
+    if (ms === -1) {
+      stopPlaying();
+    }
+  });
+}
+
+const stopPlaying = () => {
+  audio.playing.node.classList.remove(audio.playing.playingClass);
+  audio.playing.node.classList.add(audio.playing.stoppedClass);
+  audio.playing = null;
+  audio.player.pause();
+};
+
 const showRecordPopup = (key) => {
   return () => {
-    currAudioKey = key;
+    audio.key = key;
     const text = windowTop.document.getElementById("dt5-record-text");
     text.setAttribute("dir", currLangvar.dir);
     text.textContent = document.getElementById(key).textContent;
+    setPlayInPopupState(initialAudioMap[key] || audio.blob[key]);
     toTarget("record-popup");
   };
 }
 
-const recordCurrent = () => {
-  if (recording) {
+const recordInPopup = (e) => {
+  if (audio.recording) {
     stopRecording();
   } else {
-    mic = new Microphone({resampleRate: 16000});
-    mic.observeProgress().subscribe((ms) => {
-      //console.log(ms / recordMs);
+    audio.mic = new Microphone({resampleRate: 16000});
+    const progress = windowTop.document.getElementById("dt5-progress");
+    audio.mic.observeProgress().subscribe((ms) => {
+      progress.value = ms / audio.recordMs;
     });
-    mic.connect().then(() => {
-      mic.record();
-      recording = true;
-      const button = windowTop.document.getElementById("dt5-record");
-      button.classList.remove("fa-dot-circle");
-      button.classList.add("fa-stop-circle");
+    audio.mic.connect().then(() => {
+      startRecording(e.target, "fa-dot-circle", "fa-stop-circle");
       setTimeout(() => {
-        if (recording) stopRecording();
-      }, recordMs);
+        if (audio.recording) stopRecording();
+      }, audio.recordMs);
     });
   }
 };
 
+const startRecording = (node, stoppedClass, recordingClass) => {
+  node.classList.remove(stoppedClass);
+  node.classList.add(recordingClass);
+  setPlayInPopupState(false);
+  audio.recording = { node, stoppedClass, recordingClass };
+  audio.mic.record();
+};
+
 const stopRecording = () => {
-  mic.stop().then(() => {
-    currAudioBlob[currAudioKey] = mic.exportAllWav();
-    mic.destroy();
-    mic = null;
-    recording = false;
-    const button = windowTop.document.getElementById("dt5-record");
-    button.classList.remove("fa-stop-circle");
-    button.classList.add("fa-dot-circle");
+  audio.recording.node.classList.remove(audio.recording.recordingClass);
+  audio.recording.node.classList.add(audio.recording.stoppedClass);
+  audio.recording = null;
+  audio.mic.stop().then(() => {
+    setPlayInPopupState(true);
+    document.getElementById(audio.key).parentNode.querySelector(".dt5-play").style.display = "unset";
+    audio.blob[audio.key] = audio.mic.exportAllWav();
+    audio.changed = true;
+    audio.mic.destroy();
+    audio.mic = null;
   });
 };
 
-const playCurrent = () => {
-  if (playing) {
-    player.pause();
-    handlePlayStopped();
+const setPlayInPopupState = (enabled) => {
+  const classList = windowTop.document.getElementById("dt5-play").classList;
+  if (enabled) {
+    classList.remove("fa-disabled");
   } else {
-    const blob = currAudioBlob[currAudioKey];
+    classList.add("fa-disabled");
+  }
+};
+
+const playInPopup = (e) => {
+  if (audio.playing) {
+    stopPlaying();
+  } else {
+    const blob = audio.blob[audio.key];
     if (blob) {
       initPlayer();
-      player.loadFromBlob(currAudioBlob[currAudioKey]).then(() => {
-        player.observeProgress().subscribe((ms) => {
-          if (ms === -1) {
-            handlePlayStopped();
-          }
-        });
-        player.play();
-        playing = true;
-        const button = windowTop.document.getElementById("dt5-play");
-        button.classList.remove("fa-play-circle");
-        button.classList.add("fa-stop-circle");
+      audio.player.loadFromBlob(blob).then(() => {
+        startPlaying(audio.key, e.target, "fa-play-circle", "fa-stop-circle");
       });
     }
   }
 };
 
-const handlePlayStopped = () => {
-  console.log("handlePlayStopped");
-  playing = false;
-  const button = windowTop.document.getElementById("dt5-play");
-  button.classList.remove("fa-stop-circle");
-  button.classList.add("fa-play-circle");
-};
-
 const initPlayer = () => {
-  if (!player) {
-    player = new WebAudioPlayer();
+  if (!audio.player) {
+    audio.player = new WebAudioPlayer();
   }
 };
 
@@ -546,6 +579,9 @@ const init = () => {
         }, 0);
       });
     });
+
+    windowTop.document.getElementById("dt5-record").addEventListener("click", recordInPopup);
+    windowTop.document.getElementById("dt5-play").addEventListener("click", playInPopup);
   }
 
   if (currLangvar.dir === "rtl") { // inset-* properties not well supported yet, ugh
@@ -553,7 +589,7 @@ const init = () => {
       if (sheet.href.match(/\/styles\.css/)) {
         [...sheet.rules]
         .filter(rule => rule.type === CSSRule.STYLE_RULE &&
-          (rule.selectorText === "#do_the_five #search-icon" || rule.selectorText === "#do_the_five .audio-icons"))
+          (rule.selectorText === "#do_the_five #search-icon" || rule.selectorText === "#do_the_five .audio-buttons"))
         .forEach(rule => {
           rule.style.setProperty("left", rule.style.getPropertyValue("right"));
           rule.style.removeProperty("right");
@@ -615,4 +651,4 @@ fetch(`${backend}/langvar/${currUid}`)
     }
   });
 
-  export { downloadFile, playCurrent, recordCurrent, saveTranslations, toTarget };
+  export { downloadFile, playInPopup, recordInPopup, saveTranslations, toTarget };

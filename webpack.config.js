@@ -6,4 +6,5 @@ module.exports = {
     filename: "do_the_five.js",
     library: "dt5",
   },
+  //devtool: "eval-source-map",
 };

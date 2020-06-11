@@ -36,6 +36,11 @@
   background-color: #ff8080;
 }
 
+#do_the_five .fa-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 #do_the_five .background-padding {
   padding: 0.5mm;
   border-radius: 2mm;
@@ -205,16 +210,22 @@
   margin-inline-end: 24mm;
 }
 
-#do_the_five .audio-icons {
+#do_the_five .audio-buttons {
   position: absolute;
-  right: 5px;
+  right: 1.5mm;
+  display: flex;
+  flex-direction: row;
 }
 
-#do_the_five .audio-icons i {
+#do_the_five .audio-buttons > i {
   font-size: 24px;
   cursor: pointer;
-  margin-inline-start: 5px;
-  margin-inline-end: 5px;
+  margin-inline-start: 1.5mm;
+  margin-inline-end: 1.5mm;
+}
+
+#do_the_five .dt5-play {
+  display: none;
 }
 
 #do_the_five #bottom-stuff {
@@ -506,6 +517,29 @@
 
 #do_the_five #record-popup .popup {
   inline-size: 50vw;
+}
+
+#do_the_five #record-popup-controls {
+  margin-block-start: 3mm;
+  margin-block-end: 3mm;
+  display: flex;
+  align-items: center;
+}
+#do_the_five #dt5-progress {
+  margin-block-start: 5mm;
+}
+#do_the_five #record-popup .audio-button {
+  font-size: 24px;
+  cursor: pointer;
+  margin-inline-start: 2mm;
+  margin-inline-end: 2mm;
+}
+#do_the_five #record-popup .audio-button:hover {
+  color: #666;
+}
+#do_the_five #dt5-progress {
+  visibility: hidden;
+  color: black;
 }
 
 #do_the_five .popup-controls {
