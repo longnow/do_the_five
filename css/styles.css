@@ -129,7 +129,7 @@
   font-style: italic;
 }
 
-#do_the_five #stop {
+#do_the_five #stop-container {
   font-size: 36pt;
   margin-block-end: 4mm;
   text-align: center;
@@ -179,7 +179,7 @@
 #do_the_five #search-icon {
   position: relative;
   vertical-align: middle;
-  inset-inline-end: 24px;
+  right: 24px;
   color: #4c4c4c;
 }
 
@@ -203,6 +203,18 @@
 
 #do_the_five .caption {
   margin-inline-end: 24mm;
+}
+
+#do_the_five .audio-icons {
+  position: absolute;
+  right: 5px;
+}
+
+#do_the_five .audio-icons i {
+  font-size: 24px;
+  cursor: pointer;
+  margin-inline-start: 5px;
+  margin-inline-end: 5px;
 }
 
 #do_the_five #bottom-stuff {
@@ -490,6 +502,10 @@
 
 #do_the_five .message-popup .popup {
   max-inline-size: 50vw;
+}
+
+#do_the_five #record-popup .popup {
+  inline-size: 50vw;
 }
 
 #do_the_five .popup-controls {

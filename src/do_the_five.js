@@ -1,4 +1,4 @@
-//import { Microphone } from '../webaudio/dist/src';
+import { Microphone, WebAudioPlayer } from '../webaudio/dist/src';
 
 const backend = "https://apps.panlex.org/do_the_five-server";
 const downloadUrlBase = "https://panlex.org/do_the_five-download/";
@@ -17,6 +17,13 @@ const currId = initialSearchParams.get("id") || "";
 let currLangvar = {};;
 const panlexeseMap = {};
 const initialTransMap = {};
+
+let mic, player;
+const recordMs = 10000;
+const currAudioBlob = {};
+let currAudioKey;
+let recording = false;
+let playing = false;
 let changedAudio = false;
 
 const borkedError = new Error("borked-error");
@@ -101,9 +108,15 @@ const prepTransText = (trans, plToUpper) => {
       trans;
 };
 
-const applyTranslations = (transMap) => {
+const applyTranslations = (transMap, audio) => {
   transNodes.forEach((node) => {
     node.innerHTML = prepTransHTML(transMap[node.id], node.id === "stop");
+    if (audio[node.id]) {
+      const playIcon = document.createElement("i");
+      playIcon.className = "fas fa-volume-up dt5-audio dt5-play";
+      playIcon.addEventListener("click", playTranslation(node.id));
+      node.nextElementSibling.appendChild(playIcon);
+    }
   });
   if (!borked || official) {
     transNodes.forEach((node) => {
@@ -113,9 +126,18 @@ const applyTranslations = (transMap) => {
         node.classList.add("highlight-dark");
         node.addEventListener("input", (e) => (node.classList.remove("highlight-dark")), { once: true });
       }
+      if (node.id !== "language") {
+        const recordIcon = document.createElement("i");
+        recordIcon.className = "fas fa-microphone dt5-audio dt5-record";
+        recordIcon.addEventListener("click", showRecordPopup(node.id));
+        node.nextElementSibling.appendChild(recordIcon);
+      }
     });
     windowTop.onbeforeunload = (e) => {
-      return unsavedChanges();
+      if (unsavedChanges()) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
     };
   }
   document.title = document.getElementById("stop").textContent;
@@ -123,8 +145,7 @@ const applyTranslations = (transMap) => {
 
 const applyTooltips = (transMap) => {
   transNodes.forEach((node) => {
-    const titleNode = node.tagName === "SPAN" ? node.parentNode : node;
-    titleNode.setAttribute("title", prepTransText(transMap[node.id], node.id === "stop"));
+    node.parentNode.setAttribute("title", prepTransText(transMap[node.id], node.id === "stop"));
   });
 };
 
@@ -134,7 +155,10 @@ const populateTranslations = () => {
   return fetch(url)
     .then((r) => r.json())
     .then((json) => {
-      applyTranslations(json);
+      const audio = { "stop": true, "wash": true, "cough": false, "face": false, "distance": false, "home": true };
+      //const audio = json.audio;
+      //delete json.audio;
+      applyTranslations(json, audio);
     });
 };
 
@@ -364,6 +388,93 @@ const resize = () => {
   }
 };
 
+const playTranslation = (key) => {
+  return () => {
+
+  };
+}
+
+const showRecordPopup = (key) => {
+  return () => {
+    currAudioKey = key;
+    const text = windowTop.document.getElementById("dt5-record-text");
+    text.setAttribute("dir", currLangvar.dir);
+    text.textContent = document.getElementById(key).textContent;
+    toTarget("record-popup");
+  };
+}
+
+const recordCurrent = () => {
+  if (recording) {
+    stopRecording();
+  } else {
+    mic = new Microphone({resampleRate: 16000});
+    mic.observeProgress().subscribe((ms) => {
+      //console.log(ms / recordMs);
+    });
+    mic.connect().then(() => {
+      mic.record();
+      recording = true;
+      const button = windowTop.document.getElementById("dt5-record");
+      button.classList.remove("fa-dot-circle");
+      button.classList.add("fa-stop-circle");
+      setTimeout(() => {
+        if (recording) stopRecording();
+      }, recordMs);
+    });
+  }
+};
+
+const stopRecording = () => {
+  mic.stop().then(() => {
+    currAudioBlob[currAudioKey] = mic.exportAllWav();
+    mic.destroy();
+    mic = null;
+    recording = false;
+    const button = windowTop.document.getElementById("dt5-record");
+    button.classList.remove("fa-stop-circle");
+    button.classList.add("fa-dot-circle");
+  });
+};
+
+const playCurrent = () => {
+  if (playing) {
+    player.pause();
+    handlePlayStopped();
+  } else {
+    const blob = currAudioBlob[currAudioKey];
+    if (blob) {
+      initPlayer();
+      player.loadFromBlob(currAudioBlob[currAudioKey]).then(() => {
+        player.observeProgress().subscribe((ms) => {
+          if (ms === -1) {
+            handlePlayStopped();
+          }
+        });
+        player.play();
+        playing = true;
+        const button = windowTop.document.getElementById("dt5-play");
+        button.classList.remove("fa-play-circle");
+        button.classList.add("fa-stop-circle");
+      });
+    }
+  }
+};
+
+const handlePlayStopped = () => {
+  console.log("handlePlayStopped");
+  playing = false;
+  const button = windowTop.document.getElementById("dt5-play");
+  button.classList.remove("fa-stop-circle");
+  button.classList.add("fa-play-circle");
+};
+
+const initPlayer = () => {
+  if (!player) {
+    player = new WebAudioPlayer();
+  }
+};
+
 const init = () => {
   if (window !== windowTop) {
     initFromFrame();
@@ -436,6 +547,22 @@ const init = () => {
       });
     });
   }
+
+  if (currLangvar.dir === "rtl") { // inset-* properties not well supported yet, ugh
+    [...document.styleSheets].some(sheet => {
+      if (sheet.href.match(/\/styles\.css/)) {
+        [...sheet.rules]
+        .filter(rule => rule.type === CSSRule.STYLE_RULE &&
+          (rule.selectorText === "#do_the_five #search-icon" || rule.selectorText === "#do_the_five .audio-icons"))
+        .forEach(rule => {
+          rule.style.setProperty("left", rule.style.getPropertyValue("right"));
+          rule.style.removeProperty("right");
+        })
+        return true;
+      }
+      return false;
+    });
+  }
 };
 
 const initFromFrame = () => {
@@ -487,3 +614,5 @@ fetch(`${backend}/langvar/${currUid}`)
       setTimeout(() => showAlert("success-alert"), 200);
     }
   });
+
+  export { downloadFile, playCurrent, recordCurrent, saveTranslations, toTarget };

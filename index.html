@@ -24,8 +24,9 @@
         <div id="poster-background">
           <div id="poster-content">
             <div id="top-stuff">
-              <div id="stop" contenteditable="true" spellcheck="false">
-                STOP CORONAVIRUS
+              <div id="stop-container">
+                <span id="stop" contenteditable="true" spellcheck="false">STOP CORONAVIRUS</span>
+                <div class="audio-icons"></div>
               </div>
               <form class="noprint" id="lang-picker-form">
                 <label id="language" contenteditable="true" spellcheck="false">
@@ -46,6 +47,7 @@
                 >
                   Wash your hands
                 </span>
+                <div class="audio-icons"></div>
               </div>
               <div>
                 <img class="icon" src="images/cough.svg" alt="cough" />
@@ -57,6 +59,7 @@
                 >
                   Cough into your elbow
                 </span>
+                <div class="audio-icons"></div>
               </div>
               <div>
                 <img class="icon" src="images/face.svg" alt="face" />
@@ -68,6 +71,7 @@
                 >
                   Don't touch your face
                 </span>
+                <div class="audio-icons"></div>
               </div>
               <div>
                 <img class="icon" src="images/distance.svg" alt="distance" />
@@ -79,6 +83,7 @@
                 >
                   Keep distance
                 </span>
+                <div class="audio-icons"></div>
               </div>
               <div>
                 <img class="icon" src="images/home.svg" alt="home" />
@@ -90,6 +95,7 @@
                 >
                   Stay home
                 </span>
+                <div class="audio-icons"></div>
               </div>
             </div>
             <div id="bottom-stuff">
@@ -110,8 +116,11 @@
                   <i
                     id="save-icon"
                     class="fas fa-save"
-                    onclick="saveTranslations()"
+                    onclick="dt5.saveTranslations()"
                   ></i>
+                </div>
+                <div>
+                  <button onclick="dt5.micTest()">test</button>
                 </div>
               </div>
               <div id="disclaimer" dir="ltr" lang="en">
@@ -189,17 +198,17 @@
             id="share-button"
             class="dt5-button share plain"
             title="share"
-            onclick="toTarget('share-popup')"
+            onclick="dt5.toTarget('share-popup')"
           >
             <i class="fas fa-share-square"></i>
           </a>
           <a class="dt5-button share plain" title="print" onclick="window.print()">
             <i class="fas fa-print"></i>
           </a>
-          <a class="dt5-button share plain" title="view image" onclick="downloadFile('png')">
+          <a class="dt5-button share plain" title="view image" onclick="dt5.downloadFile('png')">
             <i class="fas fa-image"></i>
           </a>
-          <a class="dt5-button share plain" title="view pdf" onclick="downloadFile('pdf')">
+          <a class="dt5-button share plain" title="view pdf" onclick="dt5.downloadFile('pdf')">
             <i class="fas fa-download"></i>
           </a>
         </div>
@@ -224,10 +233,10 @@
       </div>
 
       <div id="share-popup" class="overlay noprint">
-        <a class="cancel" onclick="toTarget()"></a>
+        <a class="cancel" onclick="dt5.toTarget()"></a>
         <div class="popup">
           <div class="popup-controls">
-            <a class="dt5-button close" onclick="toTarget()">
+            <a class="dt5-button close" onclick="dt5.toTarget()">
               <i class="fas fa-window-close"></i>
             </a>
           </div>
@@ -275,15 +284,32 @@
       </div>
 
       <div id="qrcode-popup" class="overlay noprint">
-        <a class="cancel" onclick="toTarget()"></a>
+        <a class="cancel" onclick="dt5.toTarget()"></a>
         <div id="qrcode" class="popup"></div>
       </div>
 
-      <div id="error-popup" class="overlay noprint message-popup">
-        <a class="cancel" onclick="toTarget()"></a>
+      <div id="record-popup" class="overlay noprint message-popup">
+        <a class="cancel" onclick="dt5.toTarget()"></a>
         <div class="popup">
           <div class="popup-controls">
-            <a class="dt5-button close" onclick="toTarget()">
+            <a class="dt5-button close" onclick="dt5.toTarget()">
+              <i class="fas fa-window-close"></i>
+            </a>
+            <i class="fas fa-exclamation-triangle alert-icon"></i>
+          </div>
+          <div class="popup-content" dir="ltr" lang="en">
+              <div id="dt5-record-text"></div>
+              <i id="dt5-record" class="fas fa-dot-circle" onclick="dt5.recordCurrent()"></i>
+              <i id="dt5-play" class="fas fa-play-circle" onclick="dt5.playCurrent()"></i>
+          </div>
+        </div>
+      </div>
+
+      <div id="error-popup" class="overlay noprint message-popup">
+        <a class="cancel" onclick="dt5.toTarget()"></a>
+        <div class="popup">
+          <div class="popup-controls">
+            <a class="dt5-button close" onclick="dt5.toTarget()">
               <i class="fas fa-window-close"></i>
             </a>
             <i class="fas fa-exclamation-triangle alert-icon"></i>
@@ -292,10 +318,10 @@
         </div>
       </div>
       <div id="alert-popup" class="overlay noprint message-popup">
-        <a class="cancel" onclick="toTarget()"></a>
+        <a class="cancel" onclick="dt5.toTarget()"></a>
         <div class="popup">
           <div class="popup-controls">
-            <a class="dt5-button close" onclick="toTarget()">
+            <a class="dt5-button close" onclick="dt5.toTarget()">
               <i class="fas fa-window-close"></i>
             </a>
             <i class="fas fa-check-square alert-icon"></i>
@@ -339,7 +365,7 @@
       </script>
       <script src="js/panlex-language-picker.js?v=3"></script>
       <script src="js/qrcode.min.js"></script>
-      <script src="js/do_the_five.min.js?v=1"></script>
+      <script src="js/do_the_five.js?v=1"></script>
     </div>
   </body>
 </html>
