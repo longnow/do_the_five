@@ -17,7 +17,17 @@ const currId = initialSearchParams.get("id") || "";
 let currLangvar = {};;
 const panlexeseMap = {};
 const savedTransMap = {};
-const audio = { blob: {}, changed: false, exists: {}, key: null, mic: null, player: null, playing: null, recording: null, recordMs: 10000 };
+const audio = {
+    blob: {},
+    changed: false,
+    exists: {},
+    key: null,
+    mic: null,
+    player: null,
+    playing: null,
+    recording: null,
+    recordMs: 10000,
+};
 
 const borkedError = new Error("borked-error");
 const frozenUidError = new Error("frozen-uid-error");
@@ -48,9 +58,8 @@ const closeOnEsc = (e) => {
     if (lastTarget) {
       toTarget();
     }
-    if (audio.playing) {
-      stopPlaying();
-    }
+    audio.playing && stopPlaying();
+    audio.recording && stopRecording();
   }
 };
 
@@ -423,7 +432,7 @@ const startPlaying = (key, node, stoppedClass, playingClass) => {
   audio.playing = { key, node, stoppedClass, playingClass };
   audio.player.play();
   audio.player.observeProgress().subscribe((ms) => {
-    if (ms === -1) {
+    if (ms === -1 && audio.playing) {
       stopPlaying();
     }
   });
@@ -460,6 +469,7 @@ const recordInPopup = (e) => {
   if (audio.recording) {
     stopRecording();
   } else {
+    audio.playing && stopPlaying();
     audio.mic = new Microphone({resampleRate: 16000});
     const progress = windowTop.document.getElementById("dt5-progress");
     progress.value = 0;
@@ -467,14 +477,16 @@ const recordInPopup = (e) => {
       progress.value = ms / audio.recordMs;
     });
     audio.mic.connect().then(() => {
-      startRecording(e.target, "fa-dot-circle", "fa-stop-circle");
-      progress.style.visibility = "unset";
-      if (audio.timeout) {
-        clearTimeout(audio.timeout);
+      if (audio.mic.canRecord()) {
+        startRecording(e.target, "fa-dot-circle", "fa-stop-circle");
+        progress.style.visibility = "unset";
+        if (audio.timeout) {
+          clearTimeout(audio.timeout);
+        }
+        audio.timeout = setTimeout(() => {
+          if (audio.recording) stopRecording();
+        }, audio.recordMs);
       }
-      audio.timeout = setTimeout(() => {
-        if (audio.recording) stopRecording();
-      }, audio.recordMs);
     });
   }
 };
@@ -499,8 +511,7 @@ const stopRecording = () => {
     setPlayInPopupState(true);
     document.getElementById(audio.key).parentNode.querySelector(".dt5-play").style.display = "unset";
     audio.blob[audio.key] = audio.mic.exportAllWav();
-    audio.exists[audio.key] = true;
-    audio.changed = true;
+    audio.changed = audio.exists[audio.key] = true;
     audio.mic.destroy();
     audio.mic = null;
   });
