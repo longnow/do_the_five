@@ -526,7 +526,9 @@
   align-items: center;
 }
 #do_the_five #dt5-progress {
-  margin-block-start: 5mm;
+  visibility: hidden;
+  color: black;
+  margin-inline-start: 4mm;
 }
 #do_the_five #record-popup .audio-button {
   font-size: 24px;
@@ -536,10 +538,6 @@
 }
 #do_the_five #record-popup .audio-button:hover {
   color: #666;
-}
-#do_the_five #dt5-progress {
-  visibility: hidden;
-  color: black;
 }
 
 #do_the_five .popup-controls {

@@ -16,9 +16,8 @@ const browserUid = defaultUid;
 const currId = initialSearchParams.get("id") || "";
 let currLangvar = {};;
 const panlexeseMap = {};
-const initialTransMap = {};
-const initialAudioMap = {};
-const audio = { mic: null, player: null, recording: null, playing: null, key: null, recordMs: 10000, blob: {}, changed: false };
+const savedTransMap = {};
+const audio = { blob: {}, changed: false, exists: {}, key: null, mic: null, player: null, playing: null, recording: null, recordMs: 10000 };
 
 const borkedError = new Error("borked-error");
 const frozenUidError = new Error("frozen-uid-error");
@@ -65,7 +64,7 @@ const showError = (obj) => {
     const node = document.getElementById(obj.highlight);
     node.classList.remove("highlight-dark");
     node.classList.add("highlight-red");
-    node.addEventListener("focus", (e) => (node.classList.remove("highlight-red")), { once: true });
+    node.addEventListener("focus", (e) => { node.classList.remove("highlight-red") }, { once: true });
   }
   toTarget("error-popup");
 };
@@ -107,27 +106,27 @@ const prepTransText = (trans, plToUpper) => {
       trans;
 };
 
-const applyTranslations = (transMap, haveAudio) => {
-  haveAudio.forEach((key) => {
-    initialAudioMap[key] = true;
+const applyTranslations = (transMap, audioList) => {
+  audioList.forEach((key) => {
+    audio.exists[key] = true;
   });
   transNodes.forEach((node) => {
     node.innerHTML = prepTransHTML(transMap[node.id], node.id === "stop");
     if (node.id !== "language") {
       const playButton = node.parentNode.querySelector(".dt5-play");
       playButton.addEventListener("click", playTranslation(node.id));
-      if (initialAudioMap[node.id]) {
+      if (audio.exists[node.id]) {
         playButton.style.display = "unset";
       }
     }
   });
   if (!borked || official) {
     transNodes.forEach((node) => {
-      initialTransMap[node.id] = node.textContent;
+      savedTransMap[node.id] = node.textContent;
       if (Array.isArray(transMap[node.id])) {
         panlexeseMap[node.id] = node.textContent;
         node.classList.add("highlight-dark");
-        node.addEventListener("input", (e) => (node.classList.remove("highlight-dark")), { once: true });
+        node.addEventListener("input", (e) => { node.classList.remove("highlight-dark") }, { once: true });
       }
       if (node.id !== "language") {
         const recordIcon = document.createElement("i");
@@ -158,10 +157,9 @@ const populateTranslations = () => {
   return fetch(url)
     .then((r) => r.json())
     .then((json) => {
-      const haveAudio = ["stop","wash","home"];
-      //const haveAudio = json.audio;
-      //delete json.audio;
-      applyTranslations(json, haveAudio);
+      const audioList = json.audio;
+      delete json.audio;
+      applyTranslations(json, audioList);
     });
 };
 
@@ -204,15 +202,15 @@ const buildUrl = () => {
     (acc, node) => ({ ...acc, [node.id]: node.textContent }),
     {}
   );
-  const params = new URLSearchParams();
-  params.append("uid", currUid);
+  const params = new FormData();
+  params.set("uid", currUid);
   for (const key in trans) {
     if (!(key in panlexeseMap && panlexeseMap[key] === trans[key])) {
-      params.append(key, trans[key]);
+      params.set(key, trans[key]);
     }
   }
-  params.append("email", document.getElementById("email-input").value.trim());
-  params.append("name", document.getElementById("name-input").value.trim());
+  params.set("email", document.getElementById("email-input").value.trim());
+  params.set("name", document.getElementById("name-input").value.trim());
   if (trans.stop === panlexeseMap.stop) {
     obj.err = titleError;
     obj.highlight = "stop";
@@ -233,7 +231,10 @@ const buildUrl = () => {
         .value.trim()
         .toLowerCase();
       if (password.length) {
-        params.append("official", password);
+        params.set("official", password);
+        Object.keys(audio.blob).forEach((key) => {
+          params.set(`audio-${key}`, audio.blob[key]);
+        });
       } else if (!obj.err) {
         obj.err = passwordEmptyError;
         obj.highlight = "official-pw";
@@ -247,6 +248,10 @@ const buildUrl = () => {
       obj.url = new URL(windowTop.location);
       obj.url.searchParams.set("uid", currUid);
       !borked && json.length && obj.url.searchParams.set("id", json.map((n) => n.toString(36)).join("-"));
+      audio.changed = false;
+      transNodes.forEach((node) => {
+        savedTransMap[node.id] = node.textContent;
+      });
       return obj;
     });
 };
@@ -292,7 +297,7 @@ const saveTranslations = () => {
 };
 
 const unsavedChanges = () => {
-  return audio.changed || transNodes.some((node) => initialTransMap[node.id] !== node.textContent);
+  return audio.changed || transNodes.some((node) => savedTransMap[node.id] !== node.textContent);
 };
 
 const shareUrlBuilders = {
@@ -402,7 +407,10 @@ const playTranslation = (key) => {
     }
     if (shouldPlay) {
       initPlayer();
-      audio.player.load(`${backend}/audio/example.mp3`).then(() => {
+      const load = audio.blob[key]
+        ? audio.player.loadFromBlob(audio.blob[key])
+        : audio.player.load(`${backend}/audio/${currUid}_${key}.mp3`);
+      load.then(() => {
         startPlaying(key, e.target, "fa-volume-up", "fa-stop-circle");
       });
     }
@@ -434,49 +442,9 @@ const showRecordPopup = (key) => {
     const text = windowTop.document.getElementById("dt5-record-text");
     text.setAttribute("dir", currLangvar.dir);
     text.textContent = document.getElementById(key).textContent;
-    setPlayInPopupState(initialAudioMap[key] || audio.blob[key]);
+    setPlayInPopupState(audio.exists[key]);
     toTarget("record-popup");
   };
-}
-
-const recordInPopup = (e) => {
-  if (audio.recording) {
-    stopRecording();
-  } else {
-    audio.mic = new Microphone({resampleRate: 16000});
-    const progress = windowTop.document.getElementById("dt5-progress");
-    audio.mic.observeProgress().subscribe((ms) => {
-      progress.value = ms / audio.recordMs;
-    });
-    audio.mic.connect().then(() => {
-      startRecording(e.target, "fa-dot-circle", "fa-stop-circle");
-      setTimeout(() => {
-        if (audio.recording) stopRecording();
-      }, audio.recordMs);
-    });
-  }
-};
-
-const startRecording = (node, stoppedClass, recordingClass) => {
-  node.classList.remove(stoppedClass);
-  node.classList.add(recordingClass);
-  setPlayInPopupState(false);
-  audio.recording = { node, stoppedClass, recordingClass };
-  audio.mic.record();
-};
-
-const stopRecording = () => {
-  audio.recording.node.classList.remove(audio.recording.recordingClass);
-  audio.recording.node.classList.add(audio.recording.stoppedClass);
-  audio.recording = null;
-  audio.mic.stop().then(() => {
-    setPlayInPopupState(true);
-    document.getElementById(audio.key).parentNode.querySelector(".dt5-play").style.display = "unset";
-    audio.blob[audio.key] = audio.mic.exportAllWav();
-    audio.changed = true;
-    audio.mic.destroy();
-    audio.mic = null;
-  });
 };
 
 const setPlayInPopupState = (enabled) => {
@@ -486,6 +454,56 @@ const setPlayInPopupState = (enabled) => {
   } else {
     classList.add("fa-disabled");
   }
+};
+
+const recordInPopup = (e) => {
+  if (audio.recording) {
+    stopRecording();
+  } else {
+    audio.mic = new Microphone({resampleRate: 16000});
+    const progress = windowTop.document.getElementById("dt5-progress");
+    progress.value = 0;
+    audio.mic.observeProgress().subscribe((ms) => {
+      progress.value = ms / audio.recordMs;
+    });
+    audio.mic.connect().then(() => {
+      startRecording(e.target, "fa-dot-circle", "fa-stop-circle");
+      progress.style.visibility = "unset";
+      if (audio.timeout) {
+        clearTimeout(audio.timeout);
+      }
+      audio.timeout = setTimeout(() => {
+        if (audio.recording) stopRecording();
+      }, audio.recordMs);
+    });
+  }
+};
+
+const startRecording = (node, stoppedClass, recordingClass) => {
+  setPlayInPopupState(false);
+  audio.recording = { node, stoppedClass, recordingClass };
+  audio.mic.record();
+  node.classList.remove(stoppedClass);
+  node.classList.add(recordingClass);
+};
+
+const stopRecording = () => {
+  if (audio.timeout) {
+    clearTimeout(audio.timeout);
+  }
+  audio.recording.node.classList.remove(audio.recording.recordingClass);
+  audio.recording.node.classList.add(audio.recording.stoppedClass);
+  windowTop.document.getElementById("dt5-progress").style.visibility = "hidden";
+  audio.recording = null;
+  audio.mic.stop().then(() => {
+    setPlayInPopupState(true);
+    document.getElementById(audio.key).parentNode.querySelector(".dt5-play").style.display = "unset";
+    audio.blob[audio.key] = audio.mic.exportAllWav();
+    audio.exists[audio.key] = true;
+    audio.changed = true;
+    audio.mic.destroy();
+    audio.mic = null;
+  });
 };
 
 const playInPopup = (e) => {
@@ -542,12 +560,14 @@ const init = () => {
   }
 
   if (!official) {
-    [...document.getElementsByClassName("official-only")].forEach(
-      (node) => (node.style.display = "none")
-    );
+    [...document.getElementsByClassName("official-only")].forEach((node) => {
+      node.style.display = "none";
+    });
   }
   if (borked && !official) {
-    transNodes.forEach((node) => (node.contentEditable = false));
+    transNodes.forEach((node) => {
+      node.contentEditable = false;
+    });
     document.getElementById("bottom-form").style.display = "none";
   } else {
     transNodes.forEach((node) => {
@@ -630,7 +650,9 @@ fetch(`${backend}/langvar/${currUid}`)
     const langPicker = document.getElementById("lang-picker");
     langPicker.value = currLangvar.name_expr_txt;
     langPicker.addEventListener("language-select", changeLang);
-    langPicker.addEventListener("focus", (e) => (e.currentTarget.value = ""));
+    langPicker.addEventListener("focus", (e) => {
+      e.currentTarget.value = "";
+    });
     document
       .getElementById("lang-picker-form")
       .addEventListener("submit", (e) => {
