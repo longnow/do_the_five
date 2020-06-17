@@ -27,6 +27,7 @@ const audio = {
     playing: null,
     recording: null,
     recordMs: 10000,
+    resample: true,
 };
 
 const borkedError = new Error("borked-error");
@@ -475,13 +476,13 @@ const recordInPopup = (e) => {
     stopRecording();
   } else {
     audio.playing && stopPlaying();
-    audio.mic = new Microphone({resampleRate: 16000});
+    audio.mic = new Microphone(audio.resample ? {resampleRate: 16000} : {resample: false});
     const progress = windowTop.document.getElementById("dt5-progress");
     progress.value = 0;
     audio.mic.observeProgress().subscribe((ms) => {
       progress.value = ms / audio.recordMs;
     });
-    audio.mic.connect().then(() => {
+    Promise.all([audio.mic.connect(),audio.mic.onready]).then(() => {
       if (audio.mic.canRecord()) {
         startRecording(e.target, "fa-dot-circle", "fa-stop-circle");
         progress.style.visibility = "unset";
@@ -640,7 +641,7 @@ const init = () => {
   // Safari fixes
   if (window.webkitAudioContext) {
     window.AudioContext = window.webkitAudioContext;
-    window.OfflineAudioContext = window.webkitOfflineAudioContext;
+    audio.resample = false;
 
     const dad = window.AudioContext.prototype.decodeAudioData;
     window.AudioContext.prototype.decodeAudioData = function decodeAudioData(buffer) {
