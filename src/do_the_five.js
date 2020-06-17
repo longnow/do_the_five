@@ -415,16 +415,21 @@ const playTranslation = (key) => {
       stopPlaying();
     }
     if (shouldPlay) {
-      initPlayer();
-      const load = audio.blob[key]
-        ? audio.player.loadFromBlob(audio.blob[key])
-        : audio.player.load(`${backend}/audio/${currUid}_${key}.mp3`);
-      load.then(() => {
+      loadPlayerAudio(key).then(() => {
         startPlaying(key, e.target, "fa-volume-up", "fa-stop-circle");
       });
     }
   };
-}
+};
+
+const loadPlayerAudio = (key) => {
+  if (!audio.player) {
+    audio.player = new WebAudioPlayer();
+  }
+  return audio.blob[key]
+    ? audio.player.loadFromBlob(audio.blob[key])
+    : audio.player.load(`${backend}/audio/${currUid}_${key}.mp3`);
+};
 
 const startPlaying = (key, node, stoppedClass, playingClass) => {
   node.classList.remove(stoppedClass);
@@ -436,7 +441,7 @@ const startPlaying = (key, node, stoppedClass, playingClass) => {
       stopPlaying();
     }
   });
-}
+};
 
 const stopPlaying = () => {
   audio.playing.node.classList.remove(audio.playing.playingClass);
@@ -518,22 +523,23 @@ const stopRecording = () => {
 };
 
 const playInPopup = (e) => {
+  const progress = windowTop.document.getElementById("dt5-progress");
   if (audio.playing) {
     stopPlaying();
-  } else {
-    const blob = audio.blob[audio.key];
-    if (blob) {
-      initPlayer();
-      audio.player.loadFromBlob(blob).then(() => {
-        startPlaying(audio.key, e.target, "fa-play-circle", "fa-stop-circle");
+    progress.style.visibility = "hidden";
+  } else if (audio.exists[audio.key]) {
+    loadPlayerAudio(audio.key).then(() => {
+      progress.value = 0;
+      audio.player.observeProgress().subscribe((ms) => {
+        if (ms === -1) {
+          progress.style.visibility = "hidden";
+        } else {
+          progress.value = ms / audio.player.duration;
+        }
       });
-    }
-  }
-};
-
-const initPlayer = () => {
-  if (!audio.player) {
-    audio.player = new WebAudioPlayer();
+      startPlaying(audio.key, e.target, "fa-play-circle", "fa-stop-circle");
+      progress.style.visibility = "unset";
+    });
   }
 };
 
@@ -629,6 +635,19 @@ const init = () => {
       }
       return false;
     });
+  }
+
+  // Safari fixes
+  if (window.webkitAudioContext) {
+    window.AudioContext = window.webkitAudioContext;
+    window.OfflineAudioContext = window.webkitOfflineAudioContext;
+
+    const dad = window.AudioContext.prototype.decodeAudioData;
+    window.AudioContext.prototype.decodeAudioData = function decodeAudioData(buffer) {
+      return new Promise((resolve, reject) => {
+        dad.call(this, buffer, resolve, reject);
+      });
+    }
   }
 };
 
