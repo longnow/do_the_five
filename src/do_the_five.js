@@ -640,9 +640,8 @@ const init = () => {
 
   // Safari fixes
   if (window.webkitAudioContext) {
-    window.AudioContext = window.webkitAudioContext;
     audio.resample = false;
-
+    window.AudioContext = window.webkitAudioContext;
     const dad = window.AudioContext.prototype.decodeAudioData;
     window.AudioContext.prototype.decodeAudioData = function decodeAudioData(buffer) {
       return new Promise((resolve, reject) => {
