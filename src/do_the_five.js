@@ -138,13 +138,17 @@ const applyTranslations = (transMap, audioList) => {
         node.classList.add("highlight-dark");
         node.addEventListener("input", (e) => { node.classList.remove("highlight-dark") }, { once: true });
       }
-      if (node.id !== "language") {
-        const recordIcon = document.createElement("i");
-        recordIcon.className = "fas fa-microphone";
-        recordIcon.addEventListener("click", showRecordPopup(node.id));
-        node.parentNode.querySelector(".audio-buttons").appendChild(recordIcon);
-      }
     });
+    if (!currLangvar.audio_frozen) {
+      transNodes.forEach((node) => {
+        if (node.id !== "language") {
+          const recordIcon = document.createElement("i");
+          recordIcon.className = "fas fa-microphone";
+          recordIcon.addEventListener("click", showRecordPopup(node.id));
+          node.parentNode.querySelector(".audio-buttons").appendChild(recordIcon);
+        }
+      });
+    }
     windowTop.onbeforeunload = (e) => {
       if (unsavedChanges()) {
         e.preventDefault();
@@ -233,7 +237,7 @@ const buildUrl = () => {
   }
 
   if (official) {
-    if (currLangvar.official_frozen) {
+    if (currLangvar.official_frozen && unsavedChangesText()) {
       obj.err = frozenUidError;
     } else {
       const password = document
@@ -307,7 +311,10 @@ const saveTranslations = () => {
 };
 
 const unsavedChanges = () => {
-  return audio.changed || transNodes.some((node) => savedTransMap[node.id] !== node.textContent);
+  return audio.changed || unsavedChangesText();
+};
+const unsavedChangesText = () => {
+  return transNodes.some((node) => savedTransMap[node.id] !== node.textContent);
 };
 
 const shareUrlBuilders = {
