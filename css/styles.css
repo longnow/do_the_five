@@ -524,6 +524,12 @@
   display: flex;
   align-items: center;
 }
+#do_the_five #record-popup #dt5-record {
+  color: #ff0000;
+}
+#do_the_five #record-popup #dt5-record:hover {
+  color: #ff6666;
+}
 #do_the_five #record-popup #dt5-progress {
   visibility: hidden;
   color: black;
@@ -536,7 +542,7 @@
   margin-inline-end: 4mm;
 }
 #do_the_five #record-popup .audio-button:hover {
-  color: #666;
+  color: #666666;
 }
 #do_the_five #record-popup ul {
   margin-block-start: 4mm;
