@@ -116,10 +116,7 @@ const prepTransText = (trans, plToUpper) => {
       trans;
 };
 
-const applyTranslations = (transMap, audioList) => {
-  audioList.forEach((key) => {
-    audio.exists[key] = true;
-  });
+const applyTranslations = (transMap) => {
   transNodes.forEach((node) => {
     node.innerHTML = prepTransHTML(transMap[node.id], node.id === "stop");
     if (node.id !== "language") {
@@ -171,9 +168,9 @@ const populateTranslations = () => {
   return fetch(url)
     .then((r) => r.json())
     .then((json) => {
-      const audioList = json.audio;
+      audio.exists = json.audio;
       delete json.audio;
-      applyTranslations(json, audioList);
+      applyTranslations(json);
     });
 };
 
@@ -436,7 +433,7 @@ const loadPlayerAudio = (key) => {
   }
   return audio.blob[key]
     ? audio.player.loadFromBlob(audio.blob[key])
-    : audio.player.load(`${backend}/audio/${currUid}_${key}.mp3`);
+    : audio.player.load(`${backend}/audio/${currUid}_${key}.mp3?${audio.exists[key]}`);
 };
 
 const startPlaying = (key, node, stoppedClass, playingClass) => {
