@@ -60,7 +60,7 @@ const closeOnEsc = (e) => {
       toTarget();
     }
     audio.playing && stopPlaying();
-    audio.recording && stopRecording();
+    audio.recording && stopRecording(true);
   }
 };
 
@@ -477,7 +477,7 @@ const setPlayInPopupState = (enabled) => {
 
 const recordInPopup = (e) => {
   if (audio.recording) {
-    stopRecording();
+    stopRecording(true);
   } else {
     audio.playing && stopPlaying();
     audio.mic = new Microphone(audio.resample ? {resampleRate: 16000} : {resample: false});
@@ -494,7 +494,7 @@ const recordInPopup = (e) => {
           clearTimeout(audio.timeout);
         }
         audio.timeout = setTimeout(() => {
-          if (audio.recording) stopRecording();
+          if (audio.recording) stopRecording(false);
         }, audio.recordMs);
       }
     });
@@ -509,7 +509,7 @@ const startRecording = (node, stoppedClass, recordingClass) => {
   node.classList.add(recordingClass);
 };
 
-const stopRecording = () => {
+const stopRecording = (strip) => {
   if (audio.timeout) {
     clearTimeout(audio.timeout);
   }
@@ -520,6 +520,9 @@ const stopRecording = () => {
   audio.mic.stop().then(() => {
     setPlayInPopupState(true);
     document.getElementById(audio.key).parentNode.querySelector(".dt5-play").style.display = "unset";
+    if (strip) {
+      audio.mic.stripMs(500);
+    }
     audio.blob[audio.key] = audio.mic.exportAllWav();
     audio.changed = audio.exists[audio.key] = true;
     audio.mic.destroy();
