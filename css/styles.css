@@ -557,7 +557,7 @@
   justify-content: space-between;
   margin-block-start: 2mm;
   margin-inline-start: 4mm;
-  margin-inline-end: 4mm;
+  margin-inline-end: 2mm;
 }
 
 #do_the_five .close {
