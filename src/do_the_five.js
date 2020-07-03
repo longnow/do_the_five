@@ -660,6 +660,7 @@ const init = () => {
 
 const initFromFrame = () => {
   frame = windowTop.document.querySelector("iframe");
+  windowTop.dt5 = window.dt5;
   windowTop.addEventListener("keydown", closeOnEsc);
   document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
     link = link.cloneNode();
