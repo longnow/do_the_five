@@ -5,15 +5,13 @@
 
 #do_the_five body {
   visibility: hidden;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
   margin: 0;
   padding: 0;
 }
 
 #do_the_five #container {
-  transform-origin: top;
+  transform-origin: top left;
+  position: relative;
 }
 
 #do_the_five #poster {
@@ -607,6 +605,7 @@
 
   #do_the_five #container {
     transform: unset !important;
+    position: unset !important;
   }
 
   #do_the_five #poster {

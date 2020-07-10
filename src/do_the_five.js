@@ -395,10 +395,12 @@ let frame;
 let currOffset = 0;
 const initialWidth = document.getElementById("poster").getBoundingClientRect().width;
 const resize = () => {
+  const vw = windowTop.document.documentElement.clientWidth;
+  const scale = (0.95 * vw) / initialWidth;
   const container = document.getElementById("container");
-  const scale = (0.95 * windowTop.document.documentElement.clientWidth) / initialWidth;
   container.style.transform = scale < 1 ? `scale(${scale})` : null;
-  const newHeight = Number(container.getBoundingClientRect().height);
+  container.style.left = ((vw - document.getElementById("poster").getBoundingClientRect().width) / 2) + 'px';
+  const newHeight = container.getBoundingClientRect().height;
   document.body.style.height = newHeight + 'px';
   if (frame) {
     frame.style.height = (newHeight + 40) + 'px';
