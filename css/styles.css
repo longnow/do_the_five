@@ -319,6 +319,10 @@
   z-index: 10;
 }
 
+#do_the_five.png #qrcode-langs {
+  visibility: visible;
+}
+
 #do_the_five #disclaimer {
   font-weight: normal;
   font-size: 8pt;

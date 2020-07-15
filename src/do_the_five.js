@@ -399,7 +399,8 @@ const resize = () => {
   const scale = (0.95 * vw) / initialWidth;
   const container = document.getElementById("container");
   container.style.transform = scale < 1 ? `scale(${scale})` : null;
-  container.style.left = ((vw - document.getElementById("poster").getBoundingClientRect().width) / 2) + 'px';
+  const offsetDir = currLangvar.dir === "rtl" ? "right" : "left";
+  container.style[offsetDir] = ((vw - document.getElementById("poster").getBoundingClientRect().width) / 2) + 'px';
   const newHeight = container.getBoundingClientRect().height;
   document.body.style.height = newHeight + 'px';
   if (frame) {
