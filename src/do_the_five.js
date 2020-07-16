@@ -14,7 +14,8 @@ const fallbackUid = "eng-000";
 const currUid = initialSearchParams.get("uid") || defaultUid;
 const browserUid = defaultUid;
 const currId = initialSearchParams.get("id") || "";
-let currLangvar = {};;
+let currLangvar = {};
+let offsetDir = "left";
 const panlexeseMap = {};
 const savedTransMap = {};
 const audio = {
@@ -393,23 +394,29 @@ const downloadFile = (type) => {
 
 let frame;
 let currOffset = 0;
-const initialWidth = document.getElementById("poster").getBoundingClientRect().width;
+const initialRect = document.getElementById("poster").getBoundingClientRect();
+document.getElementById("container").style.maxWidth = initialRect.width + 'px';
 const resize = () => {
   const vw = windowTop.document.documentElement.clientWidth;
-  const scale = (0.95 * vw) / initialWidth;
+  const scale = Math.min(1, (0.95 * vw) / initialRect.width);
   const container = document.getElementById("container");
   container.style.transform = scale < 1 ? `scale(${scale})` : null;
-  const offsetDir = currLangvar.dir === "rtl" ? "right" : "left";
   container.style[offsetDir] = ((vw - document.getElementById("poster").getBoundingClientRect().width) / 2) + 'px';
-  const newHeight = container.getBoundingClientRect().height;
-  document.body.style.height = newHeight + 'px';
+  let newHeight = initialRect.height * scale;
   if (frame) {
+    newHeight += 60;
+    container.style.height = newHeight + 'px';
     frame.style.height = (newHeight + 40) + 'px';
-    const newOffset = frame.getBoundingClientRect().left;
+    let newOffset = frame.getBoundingClientRect()[offsetDir];
+    if (offsetDir === "right") {
+      newOffset -= vw;
+    }
     if (newOffset !== 0) {
       currOffset -= newOffset;
       frame.style.left = currOffset + 'px';
     }
+  } else {
+    container.style.height = newHeight + 'px';
   }
 };
 
@@ -688,6 +695,9 @@ fetch(`${backend}/langvar/${currUid}`)
     currLangvar = obj;
     document.documentElement.setAttribute("lang", `und-${currLangvar.script_expr_txt}`);
     document.documentElement.setAttribute("dir", currLangvar.dir);
+    if (currLangvar.dir === "rtl") {
+      offsetDir = "right";
+    }
     const langPicker = document.getElementById("lang-picker");
     langPicker.value = currLangvar.name_expr_txt;
     langPicker.addEventListener("language-select", changeLang);
