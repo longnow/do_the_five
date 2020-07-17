@@ -246,13 +246,9 @@
 #do_the_five .bottom-form-item {
   font-weight: normal;
   font-size: 11pt;
-  margin-block-end: 1mm;
+  margin-block-end: 2mm;
   display: flex;
   align-items: center;
-}
-
-#do_the_five .bottom-form-item:first-child {
-  margin-block-end: 2mm;
 }
 
 #do_the_five .bottom-form-item > label {
@@ -266,8 +262,8 @@
   inline-size: 25mm;
 }
 
-#do_the_five #save-icon {
-  font-size: 32px;
+#do_the_five #save-button {
+  font-size: 11pt;
   cursor: pointer;
 }
 
